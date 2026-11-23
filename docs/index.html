@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>纯物质的多相平衡 · 在线示例</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <style>
+/* ============================================
+   Foreign Academic Translator - HTML 样式表
+   适用于双语对照、概念高亮及打印输出
+   ============================================ */
+
+/* ---------- 全局重置与字体 ---------- */
+body {
+    font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 20px 30px;
+    background: #fafbfc;
+    color: #1e2a3a;
+    line-height: 1.8;
+    box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    border-radius: 8px;
+}
+
+/* ---------- 标题层级 ---------- */
+/* h1 大标题：最醒目 —— 浅蓝渐变背景 + 左侧粗竖条 + 圆角 + 轻投影 */
+h1 {
+    color: #0b2a4a;
+    font-size: 1.9em;
+    font-weight: 800;
+    letter-spacing: 2px;
+    line-height: 1.35;
+    background: linear-gradient(135deg, #eaf3fa, #f8fbfd);
+    border-left: 8px solid #2a7a9c;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(11, 42, 74, 0.10);
+    padding: 18px 24px;
+    margin: 0 0 30px 0;
+}
+/* h2 章标题：次醒目 —— 浅色背景块 + 左侧竖条 + 底部细线 + 圆角 */
+h2 {
+    color: #0e3a55;
+    font-size: 1.5em;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-top: 40px;
+    margin-bottom: 16px;
+    background: #e3f0f7;
+    border-left: 7px solid #2a7a9c;
+    border-bottom: 2px solid #c3d8e6;
+    border-radius: 6px;
+    padding: 12px 16px;
+}
+/* h3 节标题：再次级 —— 左侧琥珀色小圆点 + 向右浅渐变背景 */
+h3 {
+    position: relative;
+    color: #124a6b;
+    font-size: 1.24em;
+    font-weight: 700;
+    margin-top: 26px;
+    margin-bottom: 12px;
+    padding: 8px 14px 8px 28px;
+    background: linear-gradient(to right, #e8f3f9, #ffffff);
+    border-radius: 6px;
+}
+h3::before {
+    content: "";
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #f5b86e;
+}
+
+/* ---------- 段落与分割线 ---------- */
+p {
+    margin: 1em 0;
+    text-align: justify;
+}
+hr {
+    border: none;
+    border-top: 2px dashed #d0d7de;
+    margin: 25px 0;
+}
+
+/* ---------- 双语对照专用布局 ---------- */
+.bilingual-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 15px 0 25px 0;
+    border: 1px solid #e1e8ed;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    overflow: hidden;
+}
+
+/* 在 Flex 中同时控制两列，默认各占 50% */
+.bilingual-container > .source-col,
+.bilingual-container > .translation-col {
+    flex: 1 1 45%;
+    padding: 18px 22px;
+    min-width: 280px;
+    box-sizing: border-box;
+}
+
+/* 原文列样式（左侧/上方） */
+.source-col {
+    background: #f3f6fa;
+    border-right: 1px solid #e1e8ed;
+    font-family: 'Times New Roman', 'Georgia', serif;
+    font-size: 0.98em;
+    color: #1c2e40;
+}
+.source-col::before {
+    content: "📄 原文";
+    display: block;
+    font-size: 0.75em;
+    font-weight: 700;
+    color: #4a6a8a;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* 译文列样式（右侧/下方） */
+.translation-col {
+    background: #f2faf5;
+    font-size: 1.02em;
+    color: #0f2e1e;
+}
+.translation-col::before {
+    content: "🌐 译文";
+    display: block;
+    font-size: 0.75em;
+    font-weight: 700;
+    color: #2a7a5a;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+/* 移动端适配：堆叠显示，取消边框 */
+@media (max-width: 700px) {
+    .bilingual-container {
+        flex-direction: column;
+    }
+    .bilingual-container > .source-col,
+    .bilingual-container > .translation-col {
+        flex: 1 1 100%;
+        border-right: none;
+        border-bottom: 1px solid #e1e8ed;
+    }
+    .bilingual-container > .translation-col {
+        border-bottom: none;
+    }
+}
+
+/* ---------- 术语高亮（concept_highlight 模式） ---------- */
+.highlight-term {
+    background: #fff1d6;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+    color: #8a5a1a;
+    border-bottom: 2px solid #f5b86e;
+    white-space: nowrap;
+}
+
+/* ---------- 重要概念汇总表 ---------- */
+.concept-table-wrapper {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 4px double #b0c4d8;
+}
+.concept-table-wrapper h2 {
+    border-left-color: #d48a3a;
+    color: #5a3a1a;
+}
+
+.concept-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+.concept-table th {
+    background: #1a3c5e;
+    color: #ffffff;
+    padding: 12px 15px;
+    text-align: left;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+.concept-table td {
+    border: 1px solid #d8e0e8;
+    padding: 10px 15px;
+    background: #ffffff;
+}
+.concept-table tr:nth-child(even) td {
+    background: #f8fafc;
+}
+
+/* ---------- 打印样式（导出 PDF 时兼容） ---------- */
+@media print {
+    body {
+        background: white;
+        box-shadow: none;
+        margin: 0.5in;
+        padding: 0;
+        font-size: 11pt;
+    }
+    .bilingual-container {
+        break-inside: avoid;
+        border: 1px solid #ccc;
+        box-shadow: none;
+    }
+    .source-col {
+        background: #f4f6f8;
+    }
+    .translation-col {
+        background: #f4faf6;
+    }
+    .concept-table th {
+        background: #1a3c5e !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .highlight-term {
+        background: #fff1d6 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+}
+
+/* ---------- 注释样式：通俗解读注记 + 提示框（供概念高亮布局逐句注释使用） ---------- */
+.note {
+    background: #fff7e8;
+    border-left: 4px solid #f2b34c;
+    border-radius: 0 8px 8px 0;
+    padding: 10px 16px;
+    margin: 12px 0 22px;
+    font-family: 'KaiTi', 'STKaiti', '楷体', serif;
+    font-size: 15px;
+    color: #5f4a17;
+    line-height: 1.8;
+}
+.note::before {
+    content: "通俗解读";
+    font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #b47a12;
+    background: #fdeecb;
+    border-radius: 4px;
+    padding: 1px 8px;
+    margin-right: 8px;
+}
+.tipbox {
+    background: #eff4ff;
+    border: 1px solid #c9ddf9;
+    border-left: 4px solid #2a7a9c;
+    border-radius: 0 8px 8px 0;
+    padding: 10px 16px;
+    margin: 14px 0 22px;
+    font-size: 14px;
+    color: #1d3a6f;
+}
+#reading-progress {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 1001;
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.5px;
+    color: #1a3c5e;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid #dfe6ef;
+    border-radius: 20px;
+    padding: 6px 14px;
+    box-shadow: 0 2px 10px rgba(15, 35, 60, 0.18);
+    user-select: none;
+}
+/* V3 阅读器：颜色由右上角控件切换 */
+:root {
+  color-scheme: light;
+  --page-bg: #fafbfc; --surface-bg: #ffffff; --surface-soft: #f5f8fb;
+  --text: #1e2a3a; --muted: #637386; --heading: #0b2a4a; --accent: #2a7a9c;
+  --accent-strong: #164d72; --accent-soft: #eaf3fa; --border: #d8e0e8;
+  --formula-bg: #f5f8fb; --table-head: #1a3c5e; --control-shadow: 0 8px 26px rgba(15,35,60,.13);
+}
+html[data-palette="teal"] { --accent:#19877f; --accent-strong:#0f5f5a; --accent-soft:#e4f4f1; --heading:#123f45; --table-head:#145a5a; }
+html[data-palette="violet"] { --accent:#7057a3; --accent-strong:#4b347e; --accent-soft:#f0ebf8; --heading:#352454; --table-head:#49366f; }
+html[data-palette="amber"] { --accent:#b27b25; --accent-strong:#81530e; --accent-soft:#fbf1dc; --heading:#4a3517; --table-head:#6f4d1c; }
+html[data-theme="dark"] { color-scheme:dark; --page-bg:#111923; --surface-bg:#192430; --surface-soft:#202e3b; --text:#e4ebf2; --muted:#a2b1c0; --heading:#e7f0fa; --accent:#83bdd2; --accent-strong:#b8e0ee; --accent-soft:#253a49; --border:#344452; --formula-bg:#202e3b; --table-head:#233c50; --control-shadow:0 8px 26px rgba(0,0,0,.38); }
+@media (prefers-color-scheme: dark) { html[data-theme="system"] { color-scheme:dark; --page-bg:#111923; --surface-bg:#192430; --surface-soft:#202e3b; --text:#e4ebf2; --muted:#a2b1c0; --heading:#e7f0fa; --accent:#83bdd2; --accent-strong:#b8e0ee; --accent-soft:#253a49; --border:#344452; --formula-bg:#202e3b; --table-head:#233c50; --control-shadow:0 8px 26px rgba(0,0,0,.38); } }
+@media (prefers-color-scheme: dark) { html[data-theme="system"][data-palette="teal"] { --accent:#70c9bf; --accent-strong:#a1e4dc; --accent-soft:#1e3b3b; --heading:#e0f6f2; --table-head:#20504d; } html[data-theme="system"][data-palette="violet"] { --accent:#b6a1e3; --accent-strong:#d4c6f3; --accent-soft:#302842; --heading:#eee7ff; --table-head:#40325a; } html[data-theme="system"][data-palette="amber"] { --accent:#e6bb72; --accent-strong:#f2d69e; --accent-soft:#3b3020; --heading:#fff0d2; --table-head:#57421f; } }
+html[data-theme="dark"][data-palette="teal"] { --accent:#70c9bf; --accent-strong:#a1e4dc; --accent-soft:#1e3b3b; --heading:#e0f6f2; --table-head:#20504d; }
+html[data-theme="dark"][data-palette="violet"] { --accent:#b6a1e3; --accent-strong:#d4c6f3; --accent-soft:#302842; --heading:#eee7ff; --table-head:#40325a; }
+html[data-theme="dark"][data-palette="amber"] { --accent:#e6bb72; --accent-strong:#f2d69e; --accent-soft:#3b3020; --heading:#fff0d2; --table-head:#57421f; }
+body, .content-area { background:var(--page-bg); color:var(--text); }
+.content-area h1 { color:var(--heading); border-bottom:4px solid var(--accent); border-left:0; border-radius:0; box-shadow:none; background:transparent; padding:0 0 12px; letter-spacing:.5px; }
+.content-area h2 { color:var(--heading); border-left:6px solid var(--accent); border-bottom:0; border-radius:0; background:transparent; padding:0 0 0 15px; }
+.content-area h3 { color:var(--heading); background:transparent; padding:0; }
+.content-area h3::before { display:none; }
+.content-area h3::before { background:var(--accent); }
+.content-area p, .content-area li { color:var(--text); }
+.content-area a { color:var(--accent-strong); }
+.content-area table { background:var(--surface-bg); color:var(--text); }
+.content-area th { background:var(--table-head); color:#fff; }
+.content-area td { border-color:var(--border); background:var(--surface-bg); color:var(--text); }
+.content-area tbody tr:nth-child(even) td { background:var(--surface-soft); }
+.content-area span[data-en], .content-area a.term-link { color:var(--accent-strong) !important; font-weight:750 !important; text-decoration-line:underline !important; text-decoration-style:dotted !important; text-decoration-thickness:1.5px; text-underline-offset:3px; background:transparent !important; border:0 !important; border-radius:0 !important; padding:0 !important; }
+.content-area h2 .heading-source, .content-area h3 .heading-source { display:inline; margin-left:.65em; color:#164d72; font-size:.78em; font-weight:700; letter-spacing:0; text-decoration-line:underline; text-decoration-style:dotted; text-underline-offset:3px; }
+.content-area .document-title { text-align:center; margin:12px auto 30px; }
+.content-area .document-title h1 { border:0; background:transparent; box-shadow:none; padding:0; margin:0 0 4px; font-size:2.2em; }
+.content-area .document-title .source-title { color:var(--muted); font-size:1.1em; margin:0; font-family:Georgia,"Times New Roman",serif; }
+.content-area .document-title .source-title.translation-below { margin-top:4px; }
+.content-area .document-title .source-title.source-above { font-size:1.05em; margin-bottom:4px; }
+.content-area mjx-container[display="true"] { display:block; max-width:100%; overflow-x:auto; overflow-y:hidden; margin:1.25em auto !important; padding:10px 14px; border:0 !important; border-left:0 !important; background:var(--formula-bg); border-radius:8px; text-align:center !important; }
+.content-area .note { color:var(--text); background:var(--accent-soft); border-left-color:var(--accent); }
+.content-area .note::before { color:var(--accent-strong); background:var(--surface-bg); }
+.content-area .tipbox { color:var(--text); background:var(--accent-soft); border-color:var(--border); border-left-color:var(--accent); }
+#reader-controls { position:fixed; z-index:1100; top:14px; right:18px; display:flex; gap:8px; font:14px/1.4 'Segoe UI','Roboto',Arial,sans-serif; }
+.reader-control-wrap { position:relative; }
+.reader-control-button { border:1px solid var(--border); border-radius:999px; padding:8px 14px; background:var(--surface-bg); color:var(--text); box-shadow:var(--control-shadow); cursor:pointer; font-family:Segoe UI,Roboto,Arial,sans-serif; font-size:13px; font-weight:600; line-height:1.2; transition:transform .15s ease,background .15s ease; }
+.reader-control-button:hover,.reader-menu-item:hover { background:var(--accent-soft); transform:translateY(-1px); }
+.reader-menu { position:absolute; display:none; top:calc(100% + 8px); right:0; min-width:136px; padding:6px; background:var(--surface-bg); border:1px solid var(--border); border-radius:12px; box-shadow:var(--control-shadow); }
+.reader-menu.open { display:grid; gap:3px; }
+.reader-menu-item { width:100%; text-align:left; border:0; border-radius:8px; padding:8px 10px; background:transparent; color:var(--text); cursor:pointer; font-family:Segoe UI,Roboto,Arial,sans-serif; font-size:14px; line-height:1.3; }
+.reader-menu-item[aria-checked="true"] { color:var(--accent-strong); font-weight:700; background:var(--accent-soft); }
+#reading-progress { color:var(--text); background:var(--surface-bg); border-color:var(--border); box-shadow:var(--control-shadow); font-size:15px; }
+#toc-outline { background:var(--surface-bg); border-color:var(--border); box-shadow:var(--control-shadow); }
+.toc-header { color:var(--heading); border-bottom-color:var(--accent); }
+.toc-outline a { color:var(--accent-strong) !important; }
+.selection-toolbar { position:fixed; z-index:1200; display:flex; gap:4px; padding:5px; border:1px solid var(--border); border-radius:10px; background:var(--surface-bg); box-shadow:var(--control-shadow); }
+.selection-toolbar[hidden] { display:none; }
+.selection-action { border:0; border-radius:7px; padding:7px 10px; color:var(--text); background:var(--surface-soft); cursor:pointer; font:600 13px/1.2 'Segoe UI','Roboto',Arial,sans-serif; }
+.selection-action:hover { color:var(--accent-strong); background:var(--accent-soft); }
+mark.user-highlight { background:color-mix(in srgb, var(--accent) 20%, transparent); color:inherit; border-radius:2px; cursor:pointer; }
+mark.user-highlight[data-note] { text-decoration:underline dotted var(--accent); text-underline-offset:2px; }
+@media (max-width:700px) { #reader-controls { top:8px; right:8px; } .reader-control-button { padding:7px 10px; } .content-area { padding-top:68px !important; } .content-area .document-title h1 { font-size:1.7em; } }
+@media print { #reader-controls,.selection-toolbar,#toc-outline,#file-outline,#reading-progress { display:none !important; } .content-area mjx-container[display="true"] { background:transparent; } }
+
+
+
+/* V3 wide editorial layout inspired by the reference handout */
+.content-area h1 { font-size: 2.15em; }
+.content-area h2 { font-size: 1.55em; }
+.content-area h3 { font-size: 1.28em; }
+.content-area span[data-en], .content-area a.term-link { color: #164d72 !important; font-weight: 750 !important; text-decoration-line: underline !important; text-decoration-style: dotted !important; text-decoration-thickness: 1.5px; text-underline-offset: 3px; background: transparent !important; border: 0 !important; border-radius: 0 !important; padding: 0 !important; }
+html[data-theme="dark"] .content-area span[data-en], html[data-theme="dark"] .content-area a.term-link { color: #b8e0ee !important; }
+@media (prefers-color-scheme: dark) { html[data-theme="system"] .content-area span[data-en], html[data-theme="system"] .content-area a.term-link { color: #b8e0ee !important; } }
+.content-area .document-title { text-align: center; margin: 12px auto 30px; }
+.content-area .document-title h1 { color: var(--heading); border: 0; background: transparent; box-shadow: none; padding: 0; margin: 0 0 6px; font-size: 2.15em; }
+.content-area .document-title .source-title { display: block; color: var(--muted); font-size: .42em; font-weight: 500; line-height: 1.45; margin-top: .35em; font-family: Georgia, "Times New Roman", serif; }
+.content-area h1.document-title { text-align: center; font-size: 2.15em; line-height: 1.28; }
+.content-area h1.document-title .source-title { display: block; font-size: .42em !important; }
+.content-area .document-meta { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--muted); font-size: .88em; border-top: 3px solid var(--accent); padding-top: 18px; margin: 24px 0 20px; }
+.content-area .reading-guide { padding: 14px 20px; background: var(--accent-soft); border: 1px solid var(--border); border-left: 5px solid var(--accent); border-radius: 0 12px 12px 0; color: var(--text); font-size: .88em; }
+.content-area mjx-container[display="true"] { display: block; max-width: 100%; overflow-x: auto; overflow-y: hidden; margin: 1.25em auto !important; padding: 14px 16px; border: 0 !important; border-left: 0 !important; background: var(--formula-bg); border-radius: 8px; text-align: center !important; }
+.content-area .concept-table-wrapper { margin-top: 44px; padding-top: 20px; border-top: 2px solid var(--border); }
+.content-area .concept-table-wrapper h2 { border-left: 6px solid var(--accent); }
+@media (max-width: 700px) {
+  .content-area { width: calc(100% - 24px); margin: 10px auto; padding: 68px 20px 72px !important; border-radius: 10px; font-size: 17px; }
+  .content-area .document-title h1 { font-size: 1.7em; }
+  .content-area h2 { font-size: 1.35em; }
+  .content-area .document-meta { display: block; }
+  .content-area .document-meta span { display: block; margin: 4px 0; }
+}
+
+.content-area { width: min(var(--reader-width, 1830px), calc(100% - 84px)); }
+.content-area span[data-en], .content-area a.term-link, .content-area .heading-term-link {
+  color: var(--accent-strong) !important;
+}
+.content-area h2 .heading-source, .content-area h3 .heading-source,
+.content-area h4 .heading-source { color: var(--accent-strong) !important; }
+.content-area .document-title { text-align: center !important; }
+.content-area .document-title .source-title {
+  display: block !important; width: 100%; text-align: center !important;
+}
+.content-area mjx-container[display="true"] {
+  display: block !important; width: fit-content; max-width: calc(100% - 24px) !important;
+  box-sizing: border-box; margin: 1.25em auto !important; padding: 12px 18px !important;
+  overflow-x: auto; overflow-y: hidden; border: 0 !important; border-left: 0 !important;
+  background: var(--formula-bg); border-radius: 8px; text-align: center !important;
+}
+.content-area .note {
+  color: #59431b !important; background: #fff5df !important; border-left-color: #c5842a !important;
+}
+.content-area .note::before { color: #925f16 !important; background: #f8e6bd !important; }
+html[data-theme="dark"] .content-area .note {
+  color: #f0dfb6 !important; background: #332d20 !important; border-left-color: #d9a64f !important;
+}
+html[data-theme="dark"] .content-area .note::before { color: #ffdda0 !important; background: #4a3c22 !important; }
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] .content-area .note {
+    color: #f0dfb6 !important; background: #332d20 !important; border-left-color: #d9a64f !important;
+  }
+  html[data-theme="system"] .content-area .note::before { color: #ffdda0 !important; background: #4a3c22 !important; }
+}
+.reader-control-button.icon-control {
+  width: 44px; height: 44px; padding: 0; display: grid; place-items: center; font-size: 19px;
+}
+.reader-resize-handle {
+  position: fixed; z-index: 1050; width: 12px; height: 128px; border-radius: 999px;
+  cursor: ew-resize; touch-action: none; background: transparent; transition: background .16s ease, box-shadow .16s ease;
+}
+.reader-resize-handle::after {
+  content: ""; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 2px;
+  border-radius: 2px; background: var(--accent); opacity: .3; transition: opacity .16s ease, width .16s ease;
+}
+.reader-resize-handle:hover::after, .reader-resize-handle:focus-visible::after,
+.reader-resize-handle.dragging::after { left: 4px; width: 4px; opacity: 1; }
+.reader-resize-handle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.reader-resize-handle[hidden] { display: none; }
+.reader-toast {
+  position: fixed; z-index: 1300; right: 18px; bottom: 64px; max-width: min(380px, calc(100vw - 36px));
+  padding: 10px 14px; border: 1px solid #d6a1a0; border-radius: 10px; color: #602c2b;
+  background: #fff1ef; box-shadow: 0 6px 22px rgba(42, 25, 25, .18);
+  opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity .18s ease, transform .18s ease;
+}
+.reader-toast.visible { opacity: 1; transform: translateY(0); }
+.annotation-popover {
+  position: fixed; z-index: 1250; box-sizing: border-box; max-width: calc(100vw - 24px);
+  padding: 14px 16px; border: 1px solid #d9b978; border-left: 4px solid #c5842a;
+  border-radius: 10px; color: #59431b; background: #fff8e9; box-shadow: 0 8px 26px rgba(60, 45, 20, .2);
+}
+.annotation-popover[hidden] { display: none; }
+.annotation-title { display: block; margin-bottom: 7px; color: #80530e; }
+.annotation-text { margin: 0 0 12px !important; white-space: pre-wrap; overflow-wrap: anywhere; text-align: left !important; }
+.annotation-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.annotation-action {
+  border: 1px solid #dfc993; border-radius: 7px; padding: 6px 10px; color: #59431b;
+  background: #fffdf7; cursor: pointer; font: 600 13px/1.2 'Segoe UI', Arial, sans-serif;
+}
+.annotation-action:hover { background: #f8e6bd; }
+html[data-theme="dark"] .annotation-popover {
+  color: #f0dfb6; background: #332d20; border-color: #8a7040; border-left-color: #d9a64f;
+}
+html[data-theme="dark"] .annotation-title { color: #ffdda0; }
+html[data-theme="dark"] .annotation-action { color: #f0dfb6; background: #403720; border-color: #76633a; }
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] .annotation-popover { color: #f0dfb6; background: #332d20; border-color: #8a7040; border-left-color: #d9a64f; }
+  html[data-theme="system"] .annotation-title { color: #ffdda0; }
+  html[data-theme="system"] .annotation-action { color: #f0dfb6; background: #403720; border-color: #76633a; }
+}
+.content-area mark.user-highlight {
+  background: #ffd2c9 !important; color: #54251c !important; border-radius: 3px;
+  box-shadow: 0 0 0 2px rgba(174, 71, 52, .24); font-weight: 650;
+}
+.content-area mark.user-highlight[data-note] { text-decoration: underline dotted #a84332; text-underline-offset: 2px; }
+html[data-theme="dark"] .content-area mark.user-highlight {
+  background: #713d37 !important; color: #fff0df !important; box-shadow: 0 0 0 2px rgba(255, 168, 143, .28);
+}
+html[data-theme="dark"] .content-area mark.user-highlight[data-note] { text-decoration-color: #ffb5a0; }
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] .content-area mark.user-highlight {
+    background: #713d37 !important; color: #fff0df !important; box-shadow: 0 0 0 2px rgba(255, 168, 143, .28);
+  }
+  html[data-theme="system"] .content-area mark.user-highlight[data-note] { text-decoration-color: #ffb5a0; }
+}
+.content-area .quiz-instructions { margin: .75em 0 1em; color: var(--muted); font-size: .9em; }
+.content-area .quiz-question {
+  margin: 16px 0 22px; padding: 18px 20px; border: 1px solid var(--border);
+  border-radius: 10px; background: var(--surface-soft);
+}
+.content-area .quiz-question > p:first-child { margin-top: 0; }
+.content-area .quiz-options { display: grid; gap: 8px; margin: 12px 0; padding: 0; border: 0; }
+.content-area .quiz-option {
+  display: flex; align-items: flex-start; gap: 9px; padding: 9px 11px;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--surface-bg); cursor: pointer;
+}
+.content-area .quiz-option:hover { border-color: var(--accent); background: var(--accent-soft); }
+.content-area .quiz-bilingual > p { margin: 0 !important; text-align: left !important; }
+.content-area .quiz-bilingual > p + p { margin-top: .18em !important; }
+.content-area .quiz-option input { flex: 0 0 auto; margin: 0 1px 0 0; accent-color: var(--accent-strong); }
+.content-area .quiz-option input[type="radio"] { align-self: center; margin: 0 1px 0 0; }
+.content-area .quiz-submit {
+  border: 0; border-radius: 8px; padding: 9px 15px; color: #fff;
+  background: var(--accent-strong); cursor: pointer; font: 650 14px/1.2 'Segoe UI', Arial, sans-serif;
+}
+.content-area .quiz-submit:hover { background: var(--accent); }
+.content-area .quiz-submit:disabled { opacity: .65; cursor: default; }
+.content-area .quiz-feedback { margin: 12px 0 0 !important; padding: 10px 12px; border-radius: 7px; text-align: left !important; }
+.content-area .quiz-feedback[hidden] { display: none; }
+.content-area .quiz-feedback.correct { color: #205b3a; background: #e8f5ec; border-left: 4px solid #438b5f; }
+.content-area .quiz-feedback.incorrect { color: #75403a; background: #fff0ed; border-left: 4px solid #c86d5d; }
+@media (max-width: 700px) {
+  .reader-resize-handle { display: none; }
+  .content-area .quiz-question { padding: 14px; }
+}
+@media print {
+  #reader-resize-handle, #reader-toast, .annotation-popover { display: none !important; }
+  .content-area .quiz-submit { display: none !important; }
+  .content-area .quiz-feedback[hidden] { display: none !important; }
+}
+
+    </style>
+    <style>
+html { --outline-width: clamp(190px, 17vw, 250px); }
+html, body { height: 100%; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { max-width: none; min-height: 100vh; margin: 0; padding: 0; background: var(--page-bg); color: var(--text); box-shadow: none; border-radius: 0; }
+.content-area { width: min(var(--reader-width, 10000px), calc(100vw - var(--outline-width) - var(--outline-width))); max-width: none; box-sizing: border-box; margin: 16px auto; padding: 24px 46px 96px; background: var(--surface-bg); border-radius: 0; box-shadow: none; font-size: 18px; line-height: 1.85; }
+table { border-collapse: collapse; width: 100%; margin: 20px 0; }
+th, td { border: 1px solid #d8e0e8; padding: 8px 12px; }
+img { max-width: 100%; height: auto; display: block; margin: 15px 0; }
+span[data-en] { background: transparent; padding: 0; border-radius: 0; font-weight: 750; color: var(--accent-strong); text-decoration: underline dotted; text-underline-offset: 3px; cursor: help; }
+/* 左侧文件树与右侧学案大纲固定常开 */
+#file-outline, #toc-outline { position: fixed !important; top: 0 !important; bottom: 0 !important; z-index: 1000; width: var(--outline-width) !important; height: 100vh; height: 100dvh; max-height: none; overflow: auto; margin: 0 !important; transform: none !important; display: block !important; box-sizing: border-box; padding: 10px 0; color: var(--text); background: var(--surface-bg); border: 1px solid var(--border); border-radius: 0; box-shadow: none; font: 13px/1.55 'Segoe UI','Roboto',Arial,sans-serif; }
+#file-outline { left: 0 !important; border-left: 0; }
+#toc-outline { right: 0 !important; padding: 12px 8px; border-right: 0; }
+.toc-header { position: sticky; top: 0; z-index: 2; padding: 0 12px 9px; margin-bottom: 6px; border-bottom: 1px solid var(--border); background: var(--surface-bg); font-weight: 700; color: var(--accent-strong); font-size: 13px; }
+.toc-list, .file-tree-group { list-style: none; margin: 0; padding: 0; }
+.toc-item a { display: block; padding: 4px 9px; border-left: 2px solid transparent; border-radius: 3px; color: var(--text); text-decoration: none; overflow-wrap: anywhere; }
+.toc-item a:hover { color: var(--accent-strong); background: var(--accent-soft); border-left-color: var(--accent); }
+.toc-item a.is-active { color: var(--accent-strong); background: var(--accent-soft); border-left-color: var(--accent); font-weight: 700; }
+.toc-level-2 a { padding-left: 18px; }
+.toc-level-3 a { padding-left: 30px; font-size: 12px; }
+.toc-level-4 a { padding-left: 42px; font-size: 12px; }
+.file-tree { user-select: none; }
+.file-tree-root, .file-tree-folder summary, .file-tree-file a { min-height: 24px; display: flex; align-items: center; gap: 6px; box-sizing: border-box; padding: 2px 9px; color: var(--text); text-decoration: none; white-space: nowrap; }
+.file-tree-root, .file-tree-folder summary { cursor: pointer; list-style: none; }
+.file-tree-root::-webkit-details-marker, .file-tree-folder summary::-webkit-details-marker { display: none; }
+.file-tree-root { padding-left: 11px; font-weight: 700; }
+.file-tree-root:hover, .file-tree-folder summary:hover, .file-tree-file a:hover { background: var(--accent-soft); }
+.file-tree-chevron { width: 12px; flex: 0 0 12px; color: var(--muted); text-align: center; }
+.file-tree-chevron i { display: block; font-size: 11px; transition: transform .16s ease; }
+.file-tree-folder details:not([open]) > summary .file-tree-chevron i, .file-tree-root-folder:not([open]) > .file-tree-root .file-tree-chevron i { transform: rotate(-90deg); }
+.file-tree-icon { width: 16px; flex: 0 0 16px; font-size: 13px; text-align: center; }
+.folder-icon { color: #d8ad45; } .html-icon { color: #4c9bd6; }
+.folder-open-icon { display: none; } .folder-closed-icon { display: inline-block; }
+.file-tree-folder details[open] > summary .folder-open-icon, .file-tree-root-folder[open] > .file-tree-root .folder-open-icon { display: inline-block; }
+.file-tree-folder details[open] > summary .folder-closed-icon, .file-tree-root-folder[open] > .file-tree-root .folder-closed-icon { display: none; }
+.file-tree-name { overflow: hidden; text-overflow: ellipsis; }
+.file-tree-group { padding-left: 15px; }
+.file-tree-file a { padding-left: 25px; }
+.file-tree-file.current a { color: var(--accent-strong); background: var(--accent-soft); font-weight: 650; }
+.file-tree-file.current .html-icon { filter: saturate(1.25); }
+.file-tree-indent { width: 4px; flex: 0 0 4px; }
+.content-area p.course-header { margin: 0 0 24px !important; text-align: center !important; color: var(--muted) !important; font-size: 1.05em; font-weight: 650; line-height: 1.45; }
+.content-area p.course-header .source-title { display: inline !important; width: auto !important; margin: 0 0 0 .55em !important; color: var(--muted) !important; font-size: .82em !important; font-weight: 400 !important; }
+.content-area h1.document-title { text-align: center !important; font-size: 2.25em; line-height: 1.28; margin: 18px auto 30px !important; padding: 0 0 16px !important; border-left: 0 !important; border-bottom: 4px solid var(--accent) !important; background: transparent !important; box-shadow: none !important; }
+.content-area h1.document-title .source-title { display: block !important; width: 100%; margin-top: .35em; text-align: center !important; color: var(--muted) !important; font-size: .42em !important; font-weight: 500 !important; line-height: 1.45; letter-spacing: 0; }
+/* 注释样式：通俗解读注记 + 提示框 */
+.note { background: #fff7e8; border-left: 4px solid #f2b34c; border-radius: 0 8px 8px 0; padding: 10px 16px; margin: 12px 0 22px; font-family: 'KaiTi','STKaiti','楷体',serif; font-size: 15px; color: #5f4a17; line-height: 1.8; }
+.note::before { content: "通俗解读"; font-family: 'Segoe UI','Roboto',Arial,sans-serif; display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: 1px; color: #b47a12; background: #fdeecb; border-radius: 4px; padding: 1px 8px; margin-right: 8px; }
+.tipbox { background: #eff4ff; border: 1px solid #c9ddf9; border-left: 4px solid #2a7a9c; border-radius: 0 8px 8px 0; padding: 10px 16px; margin: 14px 0 22px; font-size: 14px; color: #1d3a6f; }
+#reading-progress { position: fixed; right: 16px; bottom: 16px; z-index: 1001; font-size: 20px; font-weight: 600; line-height: 1; letter-spacing: .5px; color: #1a3c5e; background: rgba(255,255,255,.92); border: 1px solid #dfe6ef; border-radius: 20px; padding: 6px 14px; box-shadow: 0 2px 10px rgba(15,35,60,.18); user-select: none; }
+@media (max-width: 1280px) { body { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); grid-template-areas: 'left right' 'content content'; align-items: start; gap: 14px; padding: 14px; box-sizing: border-box; } #file-outline, #toc-outline { position: static !important; top: auto !important; left: auto !important; right: auto !important; bottom: auto !important; transform: none !important; width: 100% !important; height: auto !important; max-height: 30vh; border: 1px solid var(--border); border-radius: 8px; } #file-outline { grid-area: left; } #toc-outline { grid-area: right; } .content-area { grid-area: content; width: min(var(--reader-width,1830px),100%); margin: 0 auto; } }
+@media (max-width: 700px) { body { display: flex; flex-direction: column; align-items: stretch; gap: 10px; padding: 10px; } #file-outline, #toc-outline { width: 100% !important; height: auto !important; max-height: 24vh; } #file-outline { order: 1; } #toc-outline { order: 2; } .content-area { order: 3; width: 100%; margin: 0; padding: 36px 22px 80px; } }
+
+.content-area span[data-en], .content-area a.term-link, .content-area .heading-term-link {
+  color: var(--accent-strong) !important;
+}
+.content-area h2 .heading-source, .content-area h3 .heading-source,
+.content-area h4 .heading-source { color: var(--accent-strong) !important; }
+.content-area .document-title { text-align: center !important; }
+.content-area .document-title .source-title {
+  display: block !important; width: 100%; text-align: center !important;
+}
+.content-area p.course-header { overflow-wrap: anywhere; }
+@media (max-width: 700px) {
+  .content-area h1.document-title { font-size: 1.7em !important; }
+}
+.content-area mjx-container[display="true"] {
+  display: block !important; width: fit-content; max-width: calc(100% - 24px) !important;
+  box-sizing: border-box; margin: 1.25em auto !important; padding: 12px 18px !important;
+  overflow-x: auto; overflow-y: hidden; border: 0 !important; border-left: 0 !important;
+  background: var(--formula-bg); border-radius: 8px; text-align: center !important;
+}
+.content-area .note {
+  color: #59431b !important; background: #fff5df !important; border-left-color: #c5842a !important;
+}
+.content-area .note::before { color: #925f16 !important; background: #f8e6bd !important; }
+html[data-theme="dark"] .content-area .note {
+  color: #f0dfb6 !important; background: #332d20 !important; border-left-color: #d9a64f !important;
+}
+html[data-theme="dark"] .content-area .note::before { color: #ffdda0 !important; background: #4a3c22 !important; }
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] .content-area .note {
+    color: #f0dfb6 !important; background: #332d20 !important; border-left-color: #d9a64f !important;
+  }
+  html[data-theme="system"] .content-area .note::before { color: #ffdda0 !important; background: #4a3c22 !important; }
+}
+.reader-control-button.icon-control {
+  width: 44px; height: 44px; padding: 0; display: grid; place-items: center; font-size: 19px;
+}
+.reader-resize-handle {
+  position: fixed; z-index: 1050; width: 12px; height: 128px; border-radius: 999px;
+  cursor: ew-resize; touch-action: none; background: transparent; transition: background .16s ease, box-shadow .16s ease;
+}
+.reader-resize-handle::after {
+  content: ""; position: absolute; left: 5px; top: 8px; bottom: 8px; width: 2px;
+  border-radius: 2px; background: var(--accent); opacity: .3; transition: opacity .16s ease, width .16s ease;
+}
+.reader-resize-handle:hover::after, .reader-resize-handle:focus-visible::after,
+.reader-resize-handle.dragging::after { left: 4px; width: 4px; opacity: 1; }
+.reader-resize-handle:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.reader-resize-handle[hidden] { display: none; }
+.reader-toast {
+  position: fixed; z-index: 1300; right: 18px; bottom: 64px; max-width: min(380px, calc(100vw - 36px));
+  padding: 10px 14px; border: 1px solid #d6a1a0; border-radius: 10px; color: #602c2b;
+  background: #fff1ef; box-shadow: 0 6px 22px rgba(42, 25, 25, .18);
+  opacity: 0; transform: translateY(6px); pointer-events: none; transition: opacity .18s ease, transform .18s ease;
+}
+.reader-toast.visible { opacity: 1; transform: translateY(0); }
+.annotation-popover {
+  position: fixed; z-index: 1250; box-sizing: border-box; max-width: calc(100vw - 24px);
+  padding: 14px 16px; border: 1px solid #d9b978; border-left: 4px solid #c5842a;
+  border-radius: 10px; color: #59431b; background: #fff8e9; box-shadow: 0 8px 26px rgba(60, 45, 20, .2);
+}
+.annotation-popover[hidden] { display: none; }
+.annotation-title { display: block; margin-bottom: 7px; color: #80530e; }
+.annotation-text { margin: 0 0 12px !important; white-space: pre-wrap; overflow-wrap: anywhere; text-align: left !important; }
+.annotation-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; }
+.annotation-action {
+  border: 1px solid #dfc993; border-radius: 7px; padding: 6px 10px; color: #59431b;
+  background: #fffdf7; cursor: pointer; font: 600 13px/1.2 'Segoe UI', Arial, sans-serif;
+}
+.annotation-action:hover { background: #f8e6bd; }
+html[data-theme="dark"] .annotation-popover {
+  color: #f0dfb6; background: #332d20; border-color: #8a7040; border-left-color: #d9a64f;
+}
+html[data-theme="dark"] .annotation-title { color: #ffdda0; }
+html[data-theme="dark"] .annotation-action { color: #f0dfb6; background: #403720; border-color: #76633a; }
+.selection-toolbar { gap: 6px; padding: 7px; border-color: var(--accent); }
+.selection-action { color: var(--accent-strong); background: var(--accent-soft); font-weight: 700; }
+.selection-action:hover { color: #fff; background: var(--accent-strong); }
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] .annotation-popover { color: #f0dfb6; background: #332d20; border-color: #8a7040; border-left-color: #d9a64f; }
+  html[data-theme="system"] .annotation-title { color: #ffdda0; }
+  html[data-theme="system"] .annotation-action { color: #f0dfb6; background: #403720; border-color: #76633a; }
+}
+.content-area mark.user-highlight {
+  background: #ffe28a !important; color: #382900 !important; border-radius: 3px; cursor: pointer;
+  box-shadow: 0 0 0 2px #b66a00; font-weight: 700;
+}
+.content-area mark.user-highlight[data-note] { text-decoration: underline dotted #8d4e00; text-underline-offset: 3px; }
+.content-area mjx-container.user-highlight {
+  background: #ffe28a !important; color: #382900 !important; outline: 2px solid #b66a00 !important;
+  outline-offset: 2px; border-radius: 6px; box-shadow: 0 0 0 4px rgba(182, 106, 0, .18); cursor: pointer;
+}
+.content-area mjx-container.user-highlight[data-note] { outline-style: dashed !important; }
+html[data-theme="dark"] .content-area mark.user-highlight {
+  background: #75520a !important; color: #fff4ca !important; box-shadow: 0 0 0 2px #ffc857;
+}
+html[data-theme="dark"] .content-area mark.user-highlight[data-note] { text-decoration-color: #ffd978; }
+html[data-theme="dark"] .content-area mjx-container.user-highlight {
+  background: #75520a !important; color: #fff4ca !important; outline-color: #ffc857 !important;
+  box-shadow: 0 0 0 4px rgba(255, 200, 87, .2);
+}
+html[data-theme="dark"] .content-area mjx-container.user-highlight[data-note] { outline-color: #ffd978 !important; }
+@media (prefers-color-scheme: dark) {
+  html[data-theme="system"] .content-area mark.user-highlight {
+    background: #75520a !important; color: #fff4ca !important; box-shadow: 0 0 0 2px #ffc857;
+  }
+  html[data-theme="system"] .content-area mark.user-highlight[data-note] { text-decoration-color: #ffd978; }
+  html[data-theme="system"] .content-area mjx-container.user-highlight {
+    background: #75520a !important; color: #fff4ca !important; outline-color: #ffc857 !important;
+    box-shadow: 0 0 0 4px rgba(255, 200, 87, .2);
+  }
+  html[data-theme="system"] .content-area mjx-container.user-highlight[data-note] { outline-color: #ffd978 !important; }
+}
+.content-area .quiz-instructions { margin: .75em 0 1em; color: var(--muted); font-size: .9em; }
+.content-area .quiz-question {
+  margin: 16px 0 22px; padding: 18px 20px; border: 1px solid var(--border);
+  border-radius: 10px; background: var(--surface-soft);
+}
+.content-area .quiz-question > p:first-child { margin-top: 0; }
+.content-area .quiz-options { display: grid; gap: 8px; margin: 12px 0; padding: 0; border: 0; }
+.content-area .quiz-option {
+  display: flex; align-items: flex-start; gap: 9px; padding: 9px 11px;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--surface-bg); cursor: pointer;
+}
+.content-area .quiz-option:hover { border-color: var(--accent); background: var(--accent-soft); }
+.content-area .quiz-options-legend { margin-bottom: 3px; color: var(--muted); font-size: 13px; }
+.content-area .quiz-option-text { min-width: 0; flex: 1; }
+.content-area .quiz-option-text p { margin: 0 !important; text-align: left !important; }
+.content-area .quiz-bilingual > p { margin: 0 !important; text-align: left !important; }
+.content-area .quiz-bilingual > p + p { margin-top: .18em !important; }
+.content-area .quiz-option input { flex: 0 0 auto; margin: 0 1px 0 0; accent-color: var(--accent-strong); }
+.content-area .quiz-option input[type="radio"] {
+  appearance: none; -webkit-appearance: none; box-sizing: border-box; width: 19px; height: 19px;
+  min-width: 19px; flex: 0 0 19px; align-self: center; margin: 0 1px 0 0; display: grid; place-content: center;
+  border: 2px solid var(--accent); border-radius: 50%; background: var(--surface-bg); cursor: pointer;
+  transition: border-color .16s ease, box-shadow .16s ease, background .16s ease;
+}
+.content-area .quiz-option input[type="radio"]::before {
+  content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--accent-strong);
+  transform: scale(0); transition: transform .14s ease;
+}
+.content-area .quiz-option input[type="radio"]:checked { border-color: var(--accent-strong); }
+.content-area .quiz-option input[type="radio"]:checked::before { transform: scale(1); }
+.content-area .quiz-option input[type="radio"]:hover { border-color: var(--accent-strong); box-shadow: 0 0 0 3px var(--accent-soft); }
+.content-area .quiz-option input[type="radio"]:focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 2px; }
+.content-area .quiz-option input[type="radio"]:disabled { cursor: default; opacity: .72; }
+.content-area .quiz-option:has(input[type="radio"]:checked) { border-color: var(--accent); background: var(--accent-soft); }
+.content-area .quiz-submit {
+  border: 0; border-radius: 8px; padding: 9px 15px; color: #fff;
+  background: var(--accent-strong); cursor: pointer; font: 650 14px/1.2 'Segoe UI', Arial, sans-serif;
+}
+.content-area .quiz-submit:hover { background: var(--accent); }
+.content-area .quiz-submit:disabled { opacity: .65; cursor: default; }
+.content-area .quiz-feedback { margin: 12px 0 0 !important; padding: 10px 12px; border-radius: 7px; text-align: left !important; }
+.content-area .quiz-feedback[hidden] { display: none; }
+.content-area .quiz-feedback.correct { color: #205b3a; background: #e8f5ec; border-left: 4px solid #438b5f; }
+.content-area .quiz-feedback.incorrect { color: #75403a; background: #fff0ed; border-left: 4px solid #c86d5d; }
+@media (max-width: 700px) {
+  .reader-resize-handle { display: none; }
+  .content-area .quiz-question { padding: 14px; }
+}
+@media print {
+  #reader-resize-handle, #reader-toast, .annotation-popover { display: none !important; }
+  .content-area .quiz-submit { display: none !important; }
+  .content-area .quiz-feedback[hidden] { display: none !important; }
+}
+#reader-controls { right: calc(var(--outline-width) + 16px) !important; }
+#reading-progress, .reader-toast { right: calc(var(--outline-width) + 16px) !important; }
+@media (max-width: 1280px) {
+  #reader-controls { right: 16px !important; }
+  #reading-progress, .reader-toast { right: 16px !important; }
+}
+
+    </style>
+    <script>
+        MathJax = {
+            tex: { inlineMath: [['$', '$'], ['\(', '\)']], displayMath: [['$$', '$$'], ['\[', '\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script type="text/javascript" id="MathJax-script" async
+        src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+</head>
+<body>
+    <nav class="file-outline" id="file-outline" aria-label="学案文件路径">
+    <div class="toc-header">资源管理器</div>
+    <div class="file-tree" role="tree" aria-label="示例学案">
+      <details class="file-tree-root-folder" open>
+        <summary class="file-tree-root"><span class="file-tree-chevron" aria-hidden="true"><i class="fa-solid fa-angle-down"></i></span><span class="file-tree-icon folder-icon" aria-hidden="true"><i class="fa-solid fa-folder-open folder-open-icon"></i><i class="fa-solid fa-folder folder-closed-icon"></i></span><span class="file-tree-name">示例学案</span></summary>
+        <ul class="file-tree-group" role="group">
+          <li class="file-tree-file"><a role="treeitem" href="index.html" title="index.html"><span class="file-tree-indent" aria-hidden="true"></span><span class="file-tree-icon html-icon" aria-hidden="true"><i class="fa-solid fa-file-code"></i></span><span class="file-tree-name">纯物质的多相平衡.html</span></a></li>
+        </ul>
+      </details>
+    </div>
+</nav>
+    <main class="content-area">
+<div style="margin:0 0 18px;padding:10px 14px;border:1px solid #cfe3ee;border-radius:8px;background:#eef7fb;color:#245a73;font-size:14px;line-height:1.6;">在线示例：本页由 <a href="https://github.com/Koloyaaa/academic-translation-toolkit" style="color:#1b6f92;">academic-translation-toolkit</a> 从一份法语课程讲义生成，课程与院系信息已打码。目录、公式、阅读进度和笔记都可以直接试用。</div>
+<!-- DornGames @Koloyaaa Léo WEE 出品: foreign-academic-translator-skill -->
+
+<p class="course-header">******</p>
+
+<h1 class="document-title" id="lesson-heading-1">纯物质的多相平衡 <span class="source-title">Équilibre d’un corps pur sous plusieurs phases</span></h1>
+<p><strong>来源：PDF第 1 页</strong></p>
+<h2 id="lesson-heading-2">I. 纯物质多相的一般概念</h2>
+<h3 id="lesson-heading-3">纯物质、相与相变</h3>
+<p>若一种物质只由一种化学组分构成，就称为<span data-en="corps pur">纯物质（corps pur）</span>。</p>
+<p><span data-en="phase">相（phase）</span>（或状态）是一个均匀系统，也可以是非均匀系统中的一个均匀子系统。在同一个相内，强度量处处均匀。</p>
+<p>物质从一个相变到另一个相时，称为<span data-en="changement de phase">相变（changement de phase）</span>（或状态变化）。</p>
+<p><img alt="固态、液态和气态之间的相变名称与方向" src="images/pdf-p0001-001-8eb1047385.png" /></p>
+<!-- SOURCE_OBJECT:PDF_PAGE:1:VISUAL_FIGURE:001 -->
+<p><strong>图示解读（PDF第 1 页）：</strong>固体和液体之间有熔化与凝固；液体和气体之间有汽化与液化；固体与气体之间有升华与凝华。</p>
+<h3 id="lesson-heading-4">影响相变的参数</h3>
+<p>纯物质的相变受温度和压力影响。系统处于单一相时，称为<span data-en="bivariant">双变系（bivariant）</span>：压力 $P$ 和温度 $T$ 可以独立选取。</p>
+<p>两相共存时，$P$ 与 $T$ 不能再独立选取，系统称为<span data-en="monovariant">单变系（monovariant）</span>。</p>
+<div class="note">通俗解读：单一相时，压力和温度可以分别调整；两相同时存在时，它们必须满足相平衡关系，因此自由选择的参数少一个。</div>
+
+<h2 id="lesson-heading-5">II. 压力–温度相图（$P,T$）</h2>
+<h3 id="lesson-heading-6">相图及相关术语</h3>
+<p><img alt="纯物质的压力-温度相图，标出三相点、临界点及固液气区域" src="images/pdf-p0001-002-da550937ec.png" /></p>
+<!-- SOURCE_OBJECT:PDF_PAGE:1:VISUAL_FIGURE:002 -->
+<p><strong>图示解读（PDF第 1 页）：</strong>相图用 $T$ 作横轴、$P$ 作纵轴；图中曲线把固体、液体、气体（蒸气）和超临界流体的区域分开。三相点是三条平衡曲线的交点，液体–蒸气曲线在临界点结束。</p>
+<p>对于每种纯物质，都可以通过实验建立相图，显示在不同状态参数下物质所处的相。常用的是 $P$-$T$ 相图：横轴为温度 $T$，纵轴为压力 $P$。</p>
+<p>两种不同相只会在分隔其稳定区域的平衡曲线上共存。因此压力和温度满足关系
+$$
+P=P_{\mathrm{eq}}(T),
+$$
+其中 $P_{\mathrm{eq}}(T)$ 称为平衡压力；相图中的这条曲线称为平衡曲线。</p>
+<p>固–液平衡曲线通常斜率为正；水是例外，其斜率为负。</p>
+<h3 id="lesson-heading-7">三相点与临界点</h3>
+<ul>
+<li><span data-en="point triple">三相点（point triple）</span> $(P_T,T_T)$ 是液体、固体和气体唯一能够共存的点，也是三条曲线的交点。</li>
+<li><span data-en="point critique">临界点（point critique）</span>是液体–蒸气平衡曲线的终点。超过该点后，不再观察到液体与蒸气之间的相变。</li>
+<li>超过临界点时，物质处于<span data-en="fluide supercritique">超临界流体（fluide supercritique）</span>状态，其性质介于气体和液体之间，但它仍是单一相。</li>
+</ul>
+<div class="note">通俗解读：三相点是固、液、气三相同时平衡的特殊点；过了临界点，液体和蒸气的分界消失，物质成为单一的超临界流体相。</div>
+
+<p><strong>来源：PDF第 2 页</strong></p>
+<h2 id="lesson-heading-8">III. 液体–蒸气平衡</h2>
+<h3 id="lesson-heading-9">液体–蒸气平衡的术语</h3>
+<ul>
+<li>只有气相存在时，称为<span data-en="vapeur sèche">干蒸气（vapeur sèche）</span>（或干气体）。</li>
+<li>气相与液相处于平衡时，气相称为<span data-en="vapeur saturante">饱和蒸气（vapeur saturante）</span>，液相称为<span data-en="liquide saturant">饱和液体（liquide saturant）</span>。</li>
+<li>在温度 $T$ 下，与该纯物质凝聚相平衡的蒸气压力，称为<span data-en="pression de vapeur saturante">饱和蒸气压（pression de vapeur saturante）</span>，记为 $P_{\mathrm{sat}}(T)$。对应曲线称为饱和曲线。</li>
+</ul>
+<h3 id="lesson-heading-10">Clapeyron 图</h3>
+<p><span data-en="diagramme de Clapeyron">Clapeyron 图（diagramme de Clapeyron）</span>表示压力 $P$ 随体积变化。横轴可以采用摩尔体积
+$$
+V_m=\frac{V}{n},
+$$
+也可以采用质量比容
+$$
+v=\frac{V}{m}.
+$$</p>
+<h3 id="lesson-heading-11">曲线上的特殊点</h3>
+<p><img alt="Clapeyron 图中的沸点、露点、饱和液体和饱和蒸气平台" src="images/pdf-p0002-003-0438c6a675.png" /></p>
+<!-- SOURCE_OBJECT:PDF_PAGE:2:VISUAL_FIGURE:003 -->
+<p><strong>图示解读（PDF第 2 页）：</strong>水平的液化平台上，端点 A 是沸点，端点 B 是露点；平台中间液体与蒸气共存，压力保持不变。</p>
+<ul>
+<li><span data-en="point de rosée">露点（point de rosée）</span>是出现第一滴液体的点。</li>
+<li><span data-en="point d’ébullition">沸点（point d’ébullition）</span>是出现第一个蒸气泡的点。</li>
+<li>在液化平台上压力保持不变，但液体与气体的比例会变化。</li>
+</ul>
+<p><strong>推导要求：</strong>会定性解释液–汽相变过程中 Clapeyron 图中的等温线形状。</p>
+<h3 id="lesson-heading-12">Andrews 等温线与饱和曲线</h3>
+<p>对不同温度 $T$ 绘制多条等温线，就得到<span data-en="isothermes d’Andrews">Andrews 等温线（isothermes d’Andrews）</span>。</p>
+<p><span data-en="courbe de saturation">饱和曲线（courbe de saturation）</span>由液化平台两端点组成，分成两部分：</p>
+<ul>
+<li><span data-en="courbe de rosée">露点线（courbe de rosée）</span>由所有露点组成，位于右侧。</li>
+<li><span data-en="courbe d’ébullition">沸点线（courbe d’ébullition）</span>由所有沸点组成，位于左侧。</li>
+</ul>
+<p><img alt="水的 Andrews 等温线和饱和曲线示例，横轴为质量比容且采用对数刻度" src="images/pdf-p0002-004-2e9f280ed7.png" /></p>
+<!-- SOURCE_OBJECT:PDF_PAGE:2:VISUAL_FIGURE:004 -->
+<p><strong>图示解读（PDF第 2 页）：</strong>图中给出水在 $100^\circ\mathrm C$、$212^\circ\mathrm C$、$311^\circ\mathrm C$ 时的等温线，并标出临界点；图示还区分 $T<T_c$ 与 $T>T_c$ 的等温线。横轴质量比容采用对数刻度。</p>
+<div class="note">通俗解读：低于临界温度时，等温线会经过液体与蒸气共存的区域；饱和曲线由这些平台的两端汇成，左支对应沸点，右支对应露点。</div>
+
+<p><strong>来源：PDF第 3 页</strong></p>
+<h2 id="lesson-heading-13">杠杆定则</h2>
+<h3 id="lesson-heading-14">杠杆定则</h3>
+<p>已知液–汽平衡系统的质量 $m$ 和质量比容 $v$，可利用<span data-en="règle des moments">杠杆定则（règle des moments）</span>求液体与蒸气的质量 $m_l$、$m_g$：
+$$
+m_l=m\frac{v_g-v}{v_g-v_l},
+\qquad
+m_g=m\frac{v-v_l}{v_g-v_l}.
+$$
+其中饱和液体和饱和蒸气的质量比容 $v_l$、$v_g$ 从 Clapeyron 图上读取。</p>
+<p>还可定义蒸气质量分数
+$$
+x_g=\frac{m_g}{m},
+$$
+以及液体质量分数
+$$
+x_l=\frac{m_l}{m}.
+$$</p>
+<p><img alt="杠杆定则示意图：混合物状态 M 位于饱和液体 A 和饱和蒸气 B 之间，蒸气质量分数为 AM/AB" src="images/pdf-p0003-005-0424694a5c.png" /></p>
+<!-- SOURCE_OBJECT:PDF_PAGE:3:VISUAL_FIGURE:005 -->
+<p><strong>图示解读（PDF第 3 页）：</strong>混合状态点 $M$ 位于饱和液体端点 $A$ 与饱和蒸气端点 $B$ 之间；蒸气质量分数满足 $x_g=AM/AB$。</p>
+<p><strong>推导要求：</strong>会从 Clapeyron 图读取饱和液体与饱和蒸气的质量比容，并会推导杠杆定则。</p>
+<div class="note">通俗解读：混合物的比容越靠近蒸气端点 $v_g$，蒸气质量分数越大；越靠近液体端点 $v_l$，液体质量分数越大。</div>
+
+<h2 id="lesson-heading-15">IV. 相变的热力学</h2>
+<h3 id="lesson-heading-16">相变与热力学第一、第二定律</h3>
+<p><strong>第一定律（回顾）</strong><br />
+物质从相 1 变到相 2 时，
+$$
+\Delta H=m\Delta h_{1\to2},
+$$
+其中 $\Delta h_{1\to2}$ 是相 1 到相 2 的单位质量相变焓（也称潜热）。</p>
+<p><strong>第二定律</strong><br />
+相变伴随着熵变。若相变在温度 $T$ 和压力恒定时从相 1 进行到相 2，则
+$$
+\Delta S=m\frac{\Delta h_{1\to2}}{T}.
+$$</p>
+<p>向较无序相转变时（熔化、汽化），熵变为正；向较有序相转变时（凝固、凝结），熵变为负。</p>
+<div class="note">通俗解读：相变焓按质量成比例增加；在温度不变时，熵变等于相变焓除以温度。熔化和汽化使物质更无序，所以熵增加；凝固和凝结则相反。</div>
+
+<h2 id="lesson-heading-17">章节串联</h2>
+<p>$P$-$T$ 相图说明不同相何时能够共存；$P$-$v$ 的 Clapeyron 图则帮助读取饱和液体与蒸气的端点数据。杠杆定则用这些端点求两相各自的质量，最后再用焓与熵变化描述相变的能量和方向。</p>
+<h3 id="lesson-heading-18">重要术语概念汇总表</h3>
+<table>
+<thead>
+<tr>
+<th>法语术语</th>
+<th>中文术语</th>
+<th>简要含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>corps pur</td>
+<td>纯物质</td>
+<td>只含一种化学组分的物质</td>
+</tr>
+<tr>
+<td>phase</td>
+<td>相</td>
+<td>均匀系统或非均匀系统中的均匀子系统</td>
+</tr>
+<tr>
+<td>monovariant / bivariant</td>
+<td>单变系 / 双变系</td>
+<td>两相共存时 $P,T$ 受约束；单相时可独立变化</td>
+</tr>
+<tr>
+<td>point triple</td>
+<td>三相点</td>
+<td>固、液、气三相共存的交点</td>
+</tr>
+<tr>
+<td>point critique</td>
+<td>临界点</td>
+<td>液体–蒸气平衡曲线的终点</td>
+</tr>
+<tr>
+<td>pression de vapeur saturante</td>
+<td>饱和蒸气压</td>
+<td>与凝聚相平衡的蒸气压力</td>
+</tr>
+<tr>
+<td>point de rosée / d’ébullition</td>
+<td>露点 / 沸点</td>
+<td>第一滴液体 / 第一个蒸气泡出现的点</td>
+</tr>
+<tr>
+<td>diagramme de Clapeyron</td>
+<td>Clapeyron 图</td>
+<td>压力随摩尔体积或质量比容变化的图</td>
+</tr>
+<tr>
+<td>règle des moments</td>
+<td>杠杆定则</td>
+<td>由混合物比容计算两相质量比例</td>
+</tr>
+<tr>
+<td>enthalpie massique de changement d’état</td>
+<td>单位质量相变焓</td>
+<td>单位质量物质发生相变时的焓变</td>
+</tr>
+</tbody>
+</table>
+<p><strong>标记说明：</strong>灯泡表示需掌握的定义；星号表示需掌握的结果；铅笔表示需掌握的推导。</p>
+<h2 id="lesson-heading-19">章末测验</h2>
+
+<p class="quiz-instructions">每题选择后单独提交；提交后显示正确答案与解析。</p>
+
+<h3 id="lesson-heading-20">基础</h3>
+
+<section class="quiz-question" data-level="basic" data-answer="B"><div class="quiz-prompt"><div class="quiz-bilingual"><p>中文：按讲义对相平衡的自由度描述，单相平衡态属于哪一类？</p>
+<p>Français：Selon la description des degrés de liberté de la fiche, de quel type est un état d’équilibre monophasé ?</p></div></div><fieldset class="quiz-options" aria-label="选择答案"><legend class="quiz-options-legend">请选择一个答案</legend>
+
+<label class="quiz-option"><input type="radio" value="A"><span class="quiz-option-letter">A.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：单变的</p>
+<p>Français：Monovariant</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="B"><span class="quiz-option-letter">B.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：双变的</p>
+<p>Français：Bivariant</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="C"><span class="quiz-option-letter">C.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：不变的</p>
+<p>Français：Invariant</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="D"><span class="quiz-option-letter">D.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：三变的</p>
+<p>Français：Trivariant</p></div></div></label>
+
+</fieldset><button type="button" class="quiz-submit">提交答案</button><div class="quiz-feedback" role="status" aria-live="polite" hidden></div><template class="quiz-explanation"><div class="quiz-bilingual"><p>中文解析：讲义说明单相平衡态是双变的，可由两个独立强度变量描述。</p>
+<p>Français：La fiche indique qu’un état d’équilibre monophasé est bivariant et peut être décrit par deux variables intensives indépendantes.</p></div></template></section>
+
+<section class="quiz-question" data-level="basic" data-answer="C"><div class="quiz-prompt"><div class="quiz-bilingual"><p>中文：纯物质的三相点对应哪种共存状态？</p>
+<p>Français：À quel état de coexistence correspond le point triple d’un corps pur ?</p></div></div><fieldset class="quiz-options" aria-label="选择答案"><legend class="quiz-options-legend">请选择一个答案</legend>
+
+<label class="quiz-option"><input type="radio" value="A"><span class="quiz-option-letter">A.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：只有液相和气相共存</p>
+<p>Français：Coexistence des phases liquide et gazeuse seulement</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="B"><span class="quiz-option-letter">B.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：固相和超临界相共存</p>
+<p>Français：Coexistence des phases solide et supercritique</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="C"><span class="quiz-option-letter">C.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：固、液、气三相共存</p>
+<p>Français：Coexistence des phases solide, liquide et gazeuse</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="D"><span class="quiz-option-letter">D.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：只有固相存在</p>
+<p>Français：Présence de la phase solide seulement</p></div></div></label>
+
+</fieldset><button type="button" class="quiz-submit">提交答案</button><div class="quiz-feedback" role="status" aria-live="polite" hidden></div><template class="quiz-explanation"><div class="quiz-bilingual"><p>中文解析：三相点是固相、液相和气相同时共存的状态。</p>
+<p>Français：Le point triple correspond à la coexistence simultanée des phases solide, liquide et gazeuse.</p></div></template></section>
+
+<section class="quiz-question" data-level="basic" data-answer="A"><div class="quiz-prompt"><div class="quiz-bilingual"><p>中文：液体与蒸气处于平衡时，饱和压力通常记为什么？</p>
+<p>Français：Comment note-t-on généralement la pression de saturation lorsque le liquide et la vapeur sont à l’équilibre ?</p></div></div><fieldset class="quiz-options" aria-label="选择答案"><legend class="quiz-options-legend">请选择一个答案</legend>
+
+<label class="quiz-option"><input type="radio" value="A"><span class="quiz-option-letter">A.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：$P_{\mathrm{sat}}(T)$</p>
+<p>Français：$P_{\mathrm{sat}}(T)$</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="B"><span class="quiz-option-letter">B.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：$P_{\mathrm{sat}}(V)$</p>
+<p>Français：$P_{\mathrm{sat}}(V)$</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="C"><span class="quiz-option-letter">C.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：$T_{\mathrm{sat}}(P)$</p>
+<p>Français：$T_{\mathrm{sat}}(P)$</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="D"><span class="quiz-option-letter">D.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：$V_{\mathrm{sat}}(P)$</p>
+<p>Français：$V_{\mathrm{sat}}(P)$</p></div></div></label>
+
+</fieldset><button type="button" class="quiz-submit">提交答案</button><div class="quiz-feedback" role="status" aria-live="polite" hidden></div><template class="quiz-explanation"><div class="quiz-bilingual"><p>中文解析：液–汽平衡时，饱和压力由温度确定，记为 $P_{\mathrm{sat}}(T)$。</p>
+<p>Français：À l’équilibre liquide-vapeur, la pression de saturation est déterminée par la température et notée $P_{\mathrm{sat}}(T)$.</p></div></template></section>
+
+<h3 id="lesson-heading-21">中档</h3>
+
+<section class="quiz-question" data-level="medium" data-answer="D"><div class="quiz-prompt"><div class="quiz-bilingual"><p>中文：在液–汽两相区，若比容为 $v$，饱和液体和饱和蒸气比容分别为 $v_l$、$v_g$，蒸气质量分数 $x_g$ 的杠杆定则公式是什么？</p>
+<p>Français：Dans la zone liquide-vapeur, avec le volume massique $v$ et les volumes massiques saturés $v_l$ et $v_g$, quelle formule donne la fraction massique de vapeur $x_g$ selon la règle du levier ?</p></div></div><fieldset class="quiz-options" aria-label="选择答案"><legend class="quiz-options-legend">请选择一个答案</legend>
+
+<label class="quiz-option"><input type="radio" value="A"><span class="quiz-option-letter">A.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：$x_g=\frac{v_g-v}{v_g-v_l}$</p>
+<p>Français：$x_g=\frac{v_g-v}{v_g-v_l}$</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="B"><span class="quiz-option-letter">B.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：$x_g=\frac{v}{v_g}$</p>
+<p>Français：$x_g=\frac{v}{v_g}$</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="C"><span class="quiz-option-letter">C.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：$x_g=\frac{v_l}{v_g-v}$</p>
+<p>Français：$x_g=\frac{v_l}{v_g-v}$</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="D"><span class="quiz-option-letter">D.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：$x_g=\frac{v-v_l}{v_g-v_l}$</p>
+<p>Français：$x_g=\frac{v-v_l}{v_g-v_l}$</p></div></div></label>
+
+</fieldset><button type="button" class="quiz-submit">提交答案</button><div class="quiz-feedback" role="status" aria-live="polite" hidden></div><template class="quiz-explanation"><div class="quiz-bilingual"><p>中文解析：杠杆定则给出 $x_g=(v-v_l)/(v_g-v_l)$，表示总体比容在饱和液体与饱和蒸气端点间的位置比例。</p>
+<p>Français：La règle du levier donne $x_g=(v-v_l)/(v_g-v_l)$ ; elle exprime la position du volume massique global entre les états saturés liquide et vapeur.</p></div></template></section>
+
+<section class="quiz-question" data-level="medium" data-answer="C"><div class="quiz-prompt"><div class="quiz-bilingual"><p>中文：在恒压加热的汽化过程中，气泡开始出现的温度称为什么？</p>
+<p>Français：Lors d’une vaporisation par chauffage à pression constante, comment s’appelle la température à laquelle apparaît la première bulle de vapeur ?</p></div></div><fieldset class="quiz-options" aria-label="选择答案"><legend class="quiz-options-legend">请选择一个答案</legend>
+
+<label class="quiz-option"><input type="radio" value="A"><span class="quiz-option-letter">A.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：露点</p>
+<p>Français：Le point de rosée</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="B"><span class="quiz-option-letter">B.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：三相点</p>
+<p>Français：Le point triple</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="C"><span class="quiz-option-letter">C.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：沸点</p>
+<p>Français：Le point d’ébullition</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="D"><span class="quiz-option-letter">D.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：临界点</p>
+<p>Français：Le point critique</p></div></div></label>
+
+</fieldset><button type="button" class="quiz-submit">提交答案</button><div class="quiz-feedback" role="status" aria-live="polite" hidden></div><template class="quiz-explanation"><div class="quiz-bilingual"><p>中文解析：讲义把恒压加热时第一泡蒸气出现的温度称为沸点；露点对应第一滴液体出现。</p>
+<p>Français：La fiche appelle point d’ébullition la température d’apparition de la première bulle de vapeur lors d’un chauffage à pression constante ; le point de rosée correspond à la première goutte liquide.</p></div></template></section>
+
+<section class="quiz-question" data-level="medium" data-answer="B"><div class="quiz-prompt"><div class="quiz-bilingual"><p>中文：对同一物质的相变，熔化/汽化与凝固/液化的熵变符号通常分别如何？</p>
+<p>Français：Pour les changements de phase d’un même corps, quels sont généralement les signes des variations d’entropie lors de la fusion/vaporisation et de la solidification/condensation ?</p></div></div><fieldset class="quiz-options" aria-label="选择答案"><legend class="quiz-options-legend">请选择一个答案</legend>
+
+<label class="quiz-option"><input type="radio" value="A"><span class="quiz-option-letter">A.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：两者都为正</p>
+<p>Français：Positive dans les deux cas</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="B"><span class="quiz-option-letter">B.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：熔化/汽化为正，凝固/液化为负</p>
+<p>Français：Positive pour la fusion/vaporisation, négative pour la solidification/condensation</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="C"><span class="quiz-option-letter">C.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：熔化/汽化为负，凝固/液化为正</p>
+<p>Français：Négative pour la fusion/vaporisation, positive pour la solidification/condensation</p></div></div></label>
+
+<label class="quiz-option"><input type="radio" value="D"><span class="quiz-option-letter">D.</span><div class="quiz-option-text"><div class="quiz-bilingual"><p>中文：两者都为负</p>
+<p>Français：Négative dans les deux cas</p></div></div></label>
+
+</fieldset><button type="button" class="quiz-submit">提交答案</button><div class="quiz-feedback" role="status" aria-live="polite" hidden></div><template class="quiz-explanation"><div class="quiz-bilingual"><p>中文解析：熔化和汽化时熵变为正；凝固和液化时熵变为负。</p>
+<p>Français：La variation d’entropie est positive lors de la fusion et de la vaporisation, et négative lors de la solidification et de la condensation.</p>
+<!-- DornGames @Koloyaaa Léo WEE 出品: foreign-academic-translator-skill --></div></template></section>
+        <footer style="margin-top: 40px; padding-top: 16px; border-top: 2px dashed #d0d7de; text-align: center; color: #8a97a5; font-size: 12px;">
+            欢迎使用 DornGames @Koloyaaa Léo WEE 出品: foreign-academic-translator-skill
+        </footer>
+    </main>
+    <nav class="toc-outline" id="toc-outline" aria-label="本学案知识大纲">
+        <div class="toc-header">本学案知识大纲</div>
+<ul class="toc-list" role="list" aria-label="本学案知识大纲"><li class="toc-item toc-level-1"><a href="#lesson-heading-1">纯物质的多相平衡</a></li><li class="toc-item toc-level-2"><a href="#lesson-heading-2">I. 纯物质多相的一般概念</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-3">纯物质、相与相变</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-4">影响相变的参数</a></li><li class="toc-item toc-level-2"><a href="#lesson-heading-5">II. 压力–温度相图（$P,T$）</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-6">相图及相关术语</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-7">三相点与临界点</a></li><li class="toc-item toc-level-2"><a href="#lesson-heading-8">III. 液体–蒸气平衡</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-9">液体–蒸气平衡的术语</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-10">Clapeyron 图</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-11">曲线上的特殊点</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-12">Andrews 等温线与饱和曲线</a></li><li class="toc-item toc-level-2"><a href="#lesson-heading-13">杠杆定则</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-14">杠杆定则</a></li><li class="toc-item toc-level-2"><a href="#lesson-heading-15">IV. 相变的热力学</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-16">相变与热力学第一、第二定律</a></li><li class="toc-item toc-level-2"><a href="#lesson-heading-17">章节串联</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-18">重要术语概念汇总表</a></li><li class="toc-item toc-level-2"><a href="#lesson-heading-19">章末测验</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-20">基础</a></li><li class="toc-item toc-level-3"><a href="#lesson-heading-21">中档</a></li></ul>
+    </nav>
+    <script>
+
+(function () {
+    "use strict";
+    var SHOW_TABLE = true;
+    var HEADING_SELECTOR = "h1, h2, h3, h4";
+    var main = document.querySelector(".content-area");
+    var prefKey = "foreign-academic-translator:reader-settings:v1";
+    var notesKey = "foreign-academic-translator:notes:v1:" + location.pathname;
+    var readerConfig = { palette: "blue", theme: "light", width: 10000 };
+    var toastTimer = 0;
+    function readJSON(key, fallback) {
+        try { var value = localStorage.getItem(key); return value ? JSON.parse(value) : fallback; }
+        catch (err) { return fallback; }
+    }
+    function writeJSON(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); return true; }
+        catch (err) { return false; }
+    }
+    function createButton(label, title, className) {
+        var button = document.createElement("button");
+        button.type = "button"; button.className = className || "reader-control-button";
+        button.textContent = label; button.title = title; button.setAttribute("aria-label", title);
+        return button;
+    }
+    function showNotice(message) {
+        var notice = document.getElementById("reader-toast");
+        if (!notice) {
+            notice = document.createElement("div"); notice.id = "reader-toast"; notice.className = "reader-toast";
+            notice.setAttribute("role", "status"); notice.setAttribute("aria-live", "polite"); document.body.appendChild(notice);
+        }
+        notice.textContent = message; notice.classList.add("visible");
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(function () { notice.classList.remove("visible"); }, 3600);
+    }
+    function createMenu(parent, label) {
+        var menu = document.createElement("div"); menu.className = "reader-menu";
+        menu.setAttribute("role", "menu"); menu.setAttribute("aria-label", label); parent.appendChild(menu); return menu;
+    }
+    function addOptions(menu, choices, onSelect) {
+        choices.forEach(function (choice) {
+            var item = createButton(choice.label, choice.label, "reader-menu-item");
+            item.dataset.value = choice.value; item.setAttribute("role", "menuitemradio");
+            item.addEventListener("click", function () { onSelect(choice.value); });
+            menu.appendChild(item);
+        });
+    }
+    function updateMenuSelection(menu, value) {
+        menu.querySelectorAll(".reader-menu-item").forEach(function (item) {
+            item.setAttribute("aria-checked", String(item.dataset.value === value));
+        });
+    }
+    function initReaderSettings() {
+        var saved = readJSON(prefKey, {});
+        var paletteLabels = { blue: "蓝色", teal: "青绿", violet: "紫色", amber: "琥珀" };
+        var themeLabels = { light: "浅色", dark: "深色", system: "跟随系统" };
+        if (["blue", "teal", "violet", "amber"].indexOf(saved.palette) !== -1) readerConfig.palette = saved.palette;
+        if (["light", "dark", "system"].indexOf(saved.theme) !== -1) readerConfig.theme = saved.theme;
+        if (typeof saved.width === "number" && isFinite(saved.width)) {
+            readerConfig.width = saved.width === 1830 ? 10000 : Math.max(720, Math.min(10000, saved.width));
+        }
+        var bar = document.createElement("div"); bar.id = "reader-controls"; bar.setAttribute("aria-label", "阅读显示设置");
+        var paletteWrap = document.createElement("div"); paletteWrap.className = "reader-control-wrap";
+        var themeWrap = document.createElement("div"); themeWrap.className = "reader-control-wrap";
+        var paletteButton = createButton("🎨", "配色：" + paletteLabels[readerConfig.palette], "reader-control-button icon-control");
+        var themeButton = createButton("◐", "明暗：" + themeLabels[readerConfig.theme], "reader-control-button icon-control");
+        paletteButton.setAttribute("aria-haspopup", "menu"); paletteButton.setAttribute("aria-expanded", "false");
+        themeButton.setAttribute("aria-haspopup", "menu"); themeButton.setAttribute("aria-expanded", "false");
+        var paletteMenu = createMenu(paletteWrap, "配色选择"), themeMenu = createMenu(themeWrap, "明暗模式选择");
+        paletteWrap.appendChild(paletteButton); paletteWrap.appendChild(paletteMenu);
+        themeWrap.appendChild(themeButton); themeWrap.appendChild(themeMenu);
+        bar.appendChild(paletteWrap); bar.appendChild(themeWrap); document.body.appendChild(bar);
+        function closeMenus() {
+            paletteMenu.classList.remove("open"); themeMenu.classList.remove("open");
+            paletteButton.setAttribute("aria-expanded", "false"); themeButton.setAttribute("aria-expanded", "false");
+        }
+        paletteButton.addEventListener("click", function () {
+            var open = !paletteMenu.classList.contains("open"); closeMenus();
+            if (open) { paletteMenu.classList.add("open"); paletteButton.setAttribute("aria-expanded", "true"); }
+        });
+        themeButton.addEventListener("click", function () {
+            var open = !themeMenu.classList.contains("open"); closeMenus();
+            if (open) { themeMenu.classList.add("open"); themeButton.setAttribute("aria-expanded", "true"); }
+        });
+        function apply() {
+            document.documentElement.setAttribute("data-palette", readerConfig.palette);
+            document.documentElement.setAttribute("data-theme", readerConfig.theme);
+            document.documentElement.style.setProperty("--reader-width", readerConfig.width + "px");
+            paletteButton.title = "配色：" + paletteLabels[readerConfig.palette]; paletteButton.setAttribute("aria-label", paletteButton.title);
+            themeButton.title = "明暗：" + themeLabels[readerConfig.theme]; themeButton.setAttribute("aria-label", themeButton.title);
+            updateMenuSelection(paletteMenu, readerConfig.palette); updateMenuSelection(themeMenu, readerConfig.theme);
+            writeJSON(prefKey, readerConfig); window.dispatchEvent(new Event("readerwidthchange"));
+        }
+        addOptions(paletteMenu, [
+            { value: "blue", label: "🔵 蓝色" }, { value: "teal", label: "🟢 青绿" },
+            { value: "violet", label: "🟣 紫色" }, { value: "amber", label: "🟠 琥珀" }
+        ], function (value) { readerConfig.palette = value; apply(); closeMenus(); });
+        addOptions(themeMenu, [
+            { value: "light", label: "☀️ 浅色" }, { value: "dark", label: "🌙 深色" },
+            { value: "system", label: "🖥️ 跟随系统" }
+        ], function (value) { readerConfig.theme = value; apply(); closeMenus(); });
+        document.addEventListener("click", function (event) { if (!bar.contains(event.target)) closeMenus(); });
+        document.addEventListener("keydown", function (event) { if (event.key === "Escape") closeMenus(); });
+        apply();
+    }
+    function assignConceptTable() {
+        if (!SHOW_TABLE) return;
+        var headings = document.querySelectorAll("h2, h3"), target = null;
+        for (var i = 0; i < headings.length; i++) {
+            var title = headings[i].textContent || "";
+            if (title.indexOf("概念汇总表") !== -1 || title.indexOf("重要术语概念") !== -1) {
+                var sibling = headings[i].nextElementSibling;
+                while (sibling && sibling.tagName !== "TABLE") sibling = sibling.nextElementSibling;
+                if (sibling) target = sibling; break;
+            }
+        }
+        if (!target) { var tables = document.querySelectorAll("table"); if (tables.length) target = tables[tables.length - 1]; }
+        if (target) target.id = "concept-table";
+    }
+    function linkElementToGlossary(element, extraClass) {
+        if (!SHOW_TABLE || element.closest("a")) return;
+        var link = document.createElement("a"); link.href = "#concept-table";
+        link.className = (element.className || "") + " " + (extraClass || "term-link");
+        link.title = element.getAttribute("data-en") || "跳转到术语表";
+        while (element.firstChild) link.appendChild(element.firstChild);
+        element.parentNode.replaceChild(link, element);
+    }
+    function linkGlossaryTerms() {
+        if (!SHOW_TABLE) return;
+        var glossaryTerms = [];
+        var table = document.getElementById("concept-table");
+        if (table) {
+            table.querySelectorAll("tr").forEach(function (row, index) {
+                if (!index || !row.cells || !row.cells.length) return;
+                var value = row.cells[0].textContent || "";
+                if (value.trim()) glossaryTerms.push(normalizeConcept(value));
+            });
+        }
+        function normalizeConcept(value) {
+            return (value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .toLowerCase().replace(/[’']/g, " ").replace(/[^a-z0-9\u3400-\u9fff]+/g, " ")
+                .trim().replace(/^(le|la|les|l|un|une|des|du|the)\s+/, "")
+                .replace(/\b([a-z]{4,})s\b/g, "$1");
+        }
+        function isGlossaryConcept(value) {
+            var headingTerm = normalizeConcept(value);
+            var stopWords = { de: true, des: true, du: true, la: true, le: true, les: true, l: true,
+                un: true, une: true, et: true, en: true, pour: true, sur: true, au: true, aux: true,
+                the: true, of: true, and: true, in: true, on: true, transformation: true };
+            var headingTokens = headingTerm.split(/\s+/).filter(function (token) { return token.length >= 5 && !stopWords[token]; });
+            return headingTerm.length >= 5 && glossaryTerms.some(function (term) {
+                if (term === headingTerm || headingTerm.indexOf(term) !== -1 || term.indexOf(headingTerm) !== -1) return true;
+                var termTokens = term.split(/\s+/);
+                return termTokens.some(function (token) {
+                    return token.length >= 5 && !stopWords[token] && headingTokens.indexOf(token) !== -1;
+                });
+            });
+        }
+        document.querySelectorAll(".content-area .document-title .source-title, .content-area h1 .heading-source, .content-area h2 .heading-source, .content-area h3 .heading-source, .content-area h4 .heading-source").forEach(function (element) {
+            if (isGlossaryConcept(element.textContent)) linkElementToGlossary(element, "heading-term-link");
+        });
+        document.querySelectorAll(".content-area span[data-en]").forEach(function (element) {
+            linkElementToGlossary(element, "term-link");
+        });
+    }
+    function initTocTracking() {
+        var toc = document.getElementById("toc-outline");
+        if (!main || !toc) return;
+        var headings = Array.prototype.slice.call(main.querySelectorAll(HEADING_SELECTOR));
+        var links = Array.prototype.slice.call(toc.querySelectorAll(".toc-item a[href^='#']"));
+        var header = toc.querySelector(".toc-header");
+        if (!headings.length || !links.length) return;
+        var activeId = "";
+        var scheduled = false;
+        function keepLinkVisible(link) {
+            var rail = toc.getBoundingClientRect();
+            var item = link.getBoundingClientRect();
+            var top = header ? header.getBoundingClientRect().bottom + 6 : rail.top + 8;
+            var bottom = rail.bottom - 8;
+            if (item.top < top) toc.scrollTop -= top - item.top;
+            else if (item.bottom > bottom) toc.scrollTop += item.bottom - bottom;
+        }
+        function update() {
+            var marker = Math.max(100, Math.min(220, window.innerHeight * .24));
+            var current = headings[0];
+            for (var i = 0; i < headings.length; i++) {
+                if (headings[i].getBoundingClientRect().top <= marker) current = headings[i];
+                else break;
+            }
+            if (window.pageYOffset + window.innerHeight >= document.documentElement.scrollHeight - 3) {
+                current = headings[headings.length - 1];
+            }
+            if (!current || current.id === activeId) return;
+            activeId = current.id;
+            var activeLink = null;
+            links.forEach(function (link) {
+                var selected = link.getAttribute("href") === "#" + activeId;
+                link.classList.toggle("is-active", selected);
+                if (selected) { link.setAttribute("aria-current", "location"); activeLink = link; }
+                else link.removeAttribute("aria-current");
+            });
+            if (activeLink) keepLinkVisible(activeLink);
+        }
+        function scheduleUpdate() {
+            if (scheduled) return;
+            scheduled = true;
+            window.requestAnimationFrame(function () { scheduled = false; update(); });
+        }
+        window.addEventListener("scroll", scheduleUpdate, { passive: true });
+        window.addEventListener("resize", scheduleUpdate);
+        window.addEventListener("load", scheduleUpdate);
+        if (window.ResizeObserver) new window.ResizeObserver(scheduleUpdate).observe(main);
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleUpdate);
+        update();
+    }
+    function initProgress() {
+        var chip = document.createElement("div"); chip.id = "reading-progress";
+        chip.setAttribute("aria-live", "polite"); document.body.appendChild(chip);
+        function update() {
+            if (!main) return;
+            var start = main.getBoundingClientRect().top + window.pageYOffset;
+            var end = main.getBoundingClientRect().bottom + window.pageYOffset;
+            if (SHOW_TABLE) {
+                var excluded = Array.prototype.find.call(main.querySelectorAll(HEADING_SELECTOR), function (heading) {
+                    var title = heading.textContent || "";
+                    return /(测验|考试|章末测试|quiz|qcm|evaluation|évaluation|exam(?:en)?s?|épreuve|\btest\b|词汇表|术语表|概念汇总表|重要术语概念|glossaire|glossary|vocabulaire)/i.test(title);
+                });
+                if (excluded) end = excluded.getBoundingClientRect().top + window.pageYOffset;
+            }
+            var max = Math.max(0, end - start - window.innerHeight);
+            var current = Math.max(0, (window.pageYOffset || document.documentElement.scrollTop) - start);
+            chip.textContent = (max ? Math.min(100, Math.round(Math.min(max, current) / max * 100)) : 100) + "%";
+        }
+        window.addEventListener("scroll", update, { passive: true });
+        window.addEventListener("resize", update); window.addEventListener("load", update); update();
+    }
+    function initResizableReader() {
+        if (!main) return;
+        var fileOutline = document.getElementById("file-outline");
+        var tocOutline = document.getElementById("toc-outline");
+        function reservedWidth() {
+            return (fileOutline ? fileOutline.getBoundingClientRect().width : 0) +
+                (tocOutline ? tocOutline.getBoundingClientRect().width : 0);
+        }
+        function readerCenter() {
+            var left = fileOutline ? fileOutline.getBoundingClientRect().width : 0;
+            var right = tocOutline ? tocOutline.getBoundingClientRect().width : 0;
+            return (left + window.innerWidth - right) / 2;
+        }
+        function maxReaderWidth() { return Math.max(720, window.innerWidth - reservedWidth()); }
+        var handle = document.createElement("div"); handle.id = "reader-resize-handle";
+        handle.className = "reader-resize-handle"; handle.setAttribute("role", "separator");
+        handle.setAttribute("aria-label", "拖动调整译文阅读栏宽度"); handle.setAttribute("aria-orientation", "vertical");
+        handle.setAttribute("aria-valuemin", "720"); handle.setAttribute("tabindex", "0"); document.body.appendChild(handle);
+        function updatePosition() {
+            if (window.innerWidth <= 1280) { handle.hidden = true; return; }
+            handle.hidden = false;
+            var rect = main.getBoundingClientRect();
+            handle.style.left = Math.max(8, Math.min(window.innerWidth - 8, rect.right - 6)) + "px";
+            handle.style.top = Math.max(56, Math.min(window.innerHeight - 148, window.innerHeight / 2 - 64)) + "px";
+            handle.setAttribute("aria-valuenow", String(Math.round(rect.width)));
+            handle.setAttribute("aria-valuemax", String(Math.round(maxReaderWidth())));
+        }
+        function updateWidth(clientX) {
+            var width = Math.max(720, Math.min(maxReaderWidth(), (clientX - readerCenter()) * 2));
+            readerConfig.width = width; document.documentElement.style.setProperty("--reader-width", width + "px");
+            writeJSON(prefKey, readerConfig); updatePosition(); window.dispatchEvent(new Event("readerwidthchange"));
+        }
+        var dragging = false;
+        handle.addEventListener("pointerdown", function (event) {
+            if (window.innerWidth <= 740) return;
+            dragging = true; handle.classList.add("dragging"); event.preventDefault();
+            if (handle.setPointerCapture) handle.setPointerCapture(event.pointerId);
+        });
+        handle.addEventListener("pointermove", function (event) { if (dragging) updateWidth(event.clientX); });
+        function stopDrag() { dragging = false; handle.classList.remove("dragging"); }
+        handle.addEventListener("pointerup", stopDrag); handle.addEventListener("pointercancel", stopDrag);
+        handle.addEventListener("keydown", function (event) {
+            if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+            event.preventDefault(); var rect = main.getBoundingClientRect();
+            updateWidth(readerCenter() + (rect.width + (event.key === "ArrowRight" ? 40 : -40)) / 2);
+        });
+        window.addEventListener("resize", updatePosition); window.addEventListener("scroll", updatePosition, { passive: true });
+        window.addEventListener("readerwidthchange", updatePosition); updatePosition();
+    }
+    function textIndex() {
+        var walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT, {
+            acceptNode: function (node) {
+                var parent = node.parentElement;
+                if (!parent || parent.closest("script, style, button, footer, mjx-container, .reader-controls, .selection-toolbar, .annotation-popover, .reader-toast")) return NodeFilter.FILTER_REJECT;
+                return node.nodeValue ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+            }
+        });
+        var nodes = [], text = "", node;
+        while ((node = walker.nextNode())) { nodes.push({ node: node, start: text.length, end: text.length + node.nodeValue.length }); text += node.nodeValue; }
+        return { nodes: nodes, text: text };
+    }
+    function offsetFor(index, node, offset) {
+        for (var i = 0; i < index.nodes.length; i++) if (index.nodes[i].node === node) return index.nodes[i].start + offset;
+        return -1;
+    }
+    function rangeFor(index, start, end) {
+        var first = null, last = null;
+        for (var i = 0; i < index.nodes.length; i++) {
+            var part = index.nodes[i];
+            if (!first && start >= part.start && start < part.end) first = { node: part.node, offset: start - part.start };
+            if (end > part.start && end <= part.end) { last = { node: part.node, offset: end - part.start }; break; }
+        }
+        if (!first || !last) return null;
+        var range = document.createRange(); range.setStart(first.node, first.offset); range.setEnd(last.node, last.offset); return range;
+    }
+    function anchorPosition(index, record) {
+        var anchor = (record.prefix || "") + record.quote + (record.suffix || ""), at = index.text.indexOf(anchor);
+        if (at >= 0) return at + (record.prefix || "").length;
+        return index.text.indexOf(record.quote);
+    }
+    function rangeOverlapsExisting(range) {
+        var marks = main.querySelectorAll(".user-highlight");
+        for (var i = 0; i < marks.length; i++) {
+            try { if (range.intersectsNode(marks[i])) return true; } catch (err) {}
+        }
+        return false;
+    }
+    function mathContainers() { return Array.prototype.slice.call(main.querySelectorAll("mjx-container")); }
+    function syncMathIds() {
+        var containers = mathContainers();
+        var used = Object.create(null), next = 0;
+        containers.forEach(function (container) { if (container.dataset.mathId) used[container.dataset.mathId] = true; });
+        containers.forEach(function (container) {
+            if (container.dataset.mathId) return;
+            while (used["formula-" + next]) next++;
+            container.dataset.mathId = "formula-" + next; used[container.dataset.mathId] = true; next++;
+        });
+        return containers;
+    }
+    function mathNodesForRange(range) {
+        if (!range) return [];
+        return mathContainers().filter(function (container) {
+            try { return range.intersectsNode(container); } catch (err) { return false; }
+        });
+    }
+    function textPartsForRange(range, index) {
+        if (!range) return [];
+        var parts = [];
+        index.nodes.forEach(function (item) {
+            var node = item.node, from = 0, to = node.nodeValue.length;
+            try { if (!range.intersectsNode(node)) return; } catch (err) { return; }
+            if (range.startContainer === node) from = range.startOffset;
+            if (range.endContainer === node) to = range.endOffset;
+            if (to <= from) return;
+            var quote = node.nodeValue.slice(from, to), start = item.start + from, end = item.start + to;
+            if (!quote.trim()) return;
+            parts.push({ quote: quote, prefix: index.text.slice(Math.max(0, start - 28), start), suffix: index.text.slice(end, end + 28) });
+        });
+        return parts;
+    }
+    function applyFormulaRecord(record) {
+        if (!record.mathIds || !record.mathIds.length) return null;
+        var containers = syncMathIds(), first = null;
+        record.mathIds.forEach(function (id) {
+            var formula = containers.find(function (item) { return item.dataset.mathId === id; });
+            if (!formula || (formula.dataset.userMarkId && formula.dataset.userMarkId !== record.id)) return;
+            formula.classList.add("user-highlight"); formula.dataset.userMarkId = record.id;
+            if (record.note) formula.dataset.note = record.note; else delete formula.dataset.note;
+            if (!first) first = formula;
+        });
+        return first;
+    }
+    function applyRecord(record) {
+        if (!main || !record || (!record.quote && !(record.mathIds && record.mathIds.length))) return null;
+        var first = null, parts = Array.isArray(record.parts) ? record.parts : (record.quote ? [record] : []);
+        parts.forEach(function (part) {
+            if (!part.quote) return;
+            var index = textIndex(), start = anchorPosition(index, part);
+            if (start < 0) return;
+            var range = rangeFor(index, start, start + part.quote.length);
+            if (!range || rangeOverlapsExisting(range)) return;
+            var mark = document.createElement("mark"); mark.className = "user-highlight"; mark.dataset.userMarkId = record.id;
+            if (record.note) mark.dataset.note = record.note;
+            try { range.surroundContents(mark); }
+            catch (err) { try { mark.appendChild(range.extractContents()); range.insertNode(mark); } catch (ignored) {} }
+            if (!first && mark.isConnected) first = mark;
+        });
+        return first || applyFormulaRecord(record);
+    }
+    function initPersonalMarks() {
+        var records = readJSON(notesKey, []); if (!Array.isArray(records)) records = [];
+        syncMathIds();
+        records.forEach(applyRecord);
+        function persist() { return writeJSON(notesKey, records); }
+        var toolbar = document.createElement("div"); toolbar.className = "selection-toolbar"; toolbar.setAttribute("role", "toolbar");
+        var markButton = createButton("高亮", "保存选中文字或公式的高亮", "selection-action");
+        var noteButton = createButton("加注释", "给选中文字或公式添加个人注释", "selection-action");
+        toolbar.appendChild(markButton); toolbar.appendChild(noteButton); toolbar.hidden = true; document.body.appendChild(toolbar);
+        var guide = main && main.querySelector(".reading-guide");
+        if (guide && !guide.dataset.markHelpAdded) {
+            guide.dataset.markHelpAdded = "true";
+            guide.appendChild(document.createTextNode(" 文本标记：选中正文或点击公式后可高亮或加注释；点击标记可查看、编辑或删除。"));
+        }
+        var popover = document.createElement("section"); popover.className = "annotation-popover";
+        popover.setAttribute("role", "dialog"); popover.setAttribute("aria-label", "个人注释"); popover.hidden = true;
+        var popTitle = document.createElement("strong"); popTitle.className = "annotation-title"; popTitle.textContent = "我的注释";
+        var popText = document.createElement("p"); popText.className = "annotation-text";
+        var actions = document.createElement("div"); actions.className = "annotation-actions";
+        var editButton = createButton("编辑", "编辑这条个人注释", "annotation-action");
+        var removeButton = createButton("删除标记", "删除这条高亮和注释", "annotation-action");
+        var closeButton = createButton("关闭", "关闭个人注释", "annotation-action");
+        actions.appendChild(editButton); actions.appendChild(removeButton); actions.appendChild(closeButton);
+        popover.appendChild(popTitle); popover.appendChild(popText); popover.appendChild(actions); document.body.appendChild(popover);
+        var activeMark = null, activeRecord = null, activeFormulaSelection = [];
+        function dismissToolbar() { toolbar.hidden = true; }
+        function closePopover() { popover.hidden = true; activeMark = null; activeRecord = null; }
+        function placeToolbar(rect) {
+            if (!rect) return;
+            toolbar.style.left = Math.max(8, rect.left + rect.width / 2 - 70) + "px";
+            toolbar.style.top = Math.max(8, rect.top - 46) + "px"; toolbar.hidden = false;
+        }
+        function showPopover(mark, item) {
+            activeMark = mark; activeRecord = item;
+            popText.textContent = item.note ? item.note : "此处是你标记的内容，目前还没有添加文字注释。";
+
+            var rect = mark.getBoundingClientRect(), width = Math.min(340, window.innerWidth - 24);
+            popover.style.width = width + "px"; popover.hidden = false;
+            var height = popover.offsetHeight, left = Math.max(12, Math.min(window.innerWidth - width - 12, rect.left));
+            var top = rect.bottom + 8;
+            if (top + height > window.innerHeight - 12) top = Math.max(12, rect.top - height - 8);
+            popover.style.left = left + "px"; popover.style.top = top + "px";
+        }
+        function unwrapMark(mark) {
+            var parent = mark.parentNode;
+            while (mark.firstChild) parent.insertBefore(mark.firstChild, mark);
+            parent.removeChild(mark);
+        }
+        function saveSelection(withNote) {
+            var selection = window.getSelection(), range = selection && selection.rangeCount ? selection.getRangeAt(0) : null;
+            var hasText = !!(selection && selection.toString().trim());
+            if (range && hasText && !main.contains(range.commonAncestorContainer)) return;
+            var formulas = range && main.contains(range.commonAncestorContainer) ? mathNodesForRange(range) : [];
+            if (!hasText && !formulas.length) formulas = activeFormulaSelection.filter(function (item) { return item.isConnected; });
+            if (!hasText && !formulas.length) return;
+            if (range && rangeOverlapsExisting(range)) { showNotice("这段文字或公式已经有高亮。请选取未标记的部分，或先删除原有标记。"); return; }
+            var index = textIndex(), parts = textPartsForRange(range, index);
+            syncMathIds();
+            var mathIds = formulas.map(function (formula) { return formula.dataset.mathId; }).filter(Boolean);
+            if (!parts.length && !mathIds.length) return;
+            var note = "";
+            if (withNote) { note = window.prompt("写下你对这段内容的注释：", ""); if (note === null) return; }
+            var record = { id: "mark-" + Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+                quote: parts.length ? parts.map(function (part) { return part.quote; }).join("") : "公式", parts: parts, mathIds: mathIds, note: note.trim() };
+            records.push(record);
+            var savedMark = applyRecord(record); dismissToolbar(); activeFormulaSelection = [];
+            if (selection) selection.removeAllRanges();
+            if (!persist()) {
+                showNotice("浏览器未开放本地保存；标记和注释仍会留在当前页面，关闭页面后可能无法保留。");
+                if (withNote && savedMark) showPopover(savedMark, record);
+                return;
+            }
+            if (withNote && savedMark) showPopover(savedMark, record);
+            else if (savedMark) showNotice("已添加高亮。点击标记可查看或补充注释。");
+            else showNotice("标记已保存，但这段文字暂时无法定位显示。请刷新页面后重试。");
+        }
+        markButton.addEventListener("mousedown", function (event) { event.preventDefault(); });
+        noteButton.addEventListener("mousedown", function (event) { event.preventDefault(); });
+        markButton.addEventListener("click", function () { saveSelection(false); });
+        noteButton.addEventListener("click", function () { saveSelection(true); });
+        editButton.addEventListener("click", function () {
+            if (!activeRecord || !activeMark) return;
+            var updated = window.prompt("编辑这条个人注释：", activeRecord.note || "");
+            if (updated === null) return;
+            var previous = activeRecord.note; activeRecord.note = updated.trim();
+            if (!persist()) { activeRecord.note = previous; showNotice("浏览器没有开放本地存储权限，注释修改未保存。"); return; }
+            Array.prototype.forEach.call(main.querySelectorAll("[data-user-mark-id]"), function (item) {
+                if (item.dataset.userMarkId !== activeRecord.id) return;
+                if (activeRecord.note) item.dataset.note = activeRecord.note; else delete item.dataset.note;
+            });
+            showPopover(activeMark, activeRecord);
+        });
+        removeButton.addEventListener("click", function () {
+            if (!activeRecord || !activeMark) return;
+            var id = activeRecord.id, index = records.findIndex(function (item) { return item.id === id; });
+            if (index < 0) return;
+            var removed = records.splice(index, 1)[0];
+            if (!persist()) { records.splice(index, 0, removed); showNotice("浏览器没有开放本地存储权限，删除未保存。"); return; }
+            var markedNodes = Array.prototype.slice.call(main.querySelectorAll("[data-user-mark-id]"));
+            closePopover();
+            markedNodes.forEach(function (node) {
+                if (node.dataset.userMarkId !== id) return;
+                if (node.tagName && node.tagName.toLowerCase() === "mark") unwrapMark(node);
+                else { node.classList.remove("user-highlight"); delete node.dataset.userMarkId; delete node.dataset.note; }
+            });
+        });
+        closeButton.addEventListener("click", closePopover);
+        document.addEventListener("mouseup", function () {
+            window.setTimeout(function () {
+                var selection = window.getSelection(), range = selection && selection.rangeCount ? selection.getRangeAt(0) : null;
+                var hasText = !!(selection && selection.toString().trim());
+                var formulas = range && main.contains(range.commonAncestorContainer) ? mathNodesForRange(range) : [];
+                if (!range || !main.contains(range.commonAncestorContainer) || (!hasText && !formulas.length)) { dismissToolbar(); return; }
+                activeFormulaSelection = formulas;
+                var rect = range.getBoundingClientRect();
+                if ((!rect || (!rect.width && !rect.height)) && formulas.length) rect = formulas[0].getBoundingClientRect();
+                placeToolbar(rect);
+            }, 0);
+        });
+        main.addEventListener("click", function (event) {
+            var marked = event.target.closest && event.target.closest(".user-highlight");
+            if (marked) {
+                var item = records.find(function (record) { return record.id === marked.dataset.userMarkId; });
+                if (item && activeMark === marked && !popover.hidden) closePopover();
+                else if (item) showPopover(marked, item);
+                return;
+            }
+            var formula = event.target.closest && event.target.closest("mjx-container");
+            if (!formula) return;
+            var selection = window.getSelection(), range = selection && selection.rangeCount ? selection.getRangeAt(0) : null;
+            if (selection && selection.toString().trim()) return;
+            activeFormulaSelection = range ? mathNodesForRange(range) : [];
+            if (!activeFormulaSelection.length) activeFormulaSelection = [formula];
+            var rect = range && range.getBoundingClientRect ? range.getBoundingClientRect() : null;
+            if ((!rect || (!rect.width && !rect.height)) && formula) rect = formula.getBoundingClientRect();
+            placeToolbar(rect);
+        });
+        document.addEventListener("click", function (event) {
+            if (popover.contains(event.target)) return;
+            if (toolbar.contains(event.target)) return;
+            if (event.target.closest && event.target.closest(".user-highlight")) return;
+            closePopover();
+        });
+        document.addEventListener("keydown", function (event) { if (event.key === "Escape") closePopover(); });
+        document.addEventListener("selectionchange", function () {
+            var selection = window.getSelection(), range = selection && selection.rangeCount ? selection.getRangeAt(0) : null;
+            if (selection && selection.toString().trim()) return;
+            if (range && main.contains(range.commonAncestorContainer) && mathNodesForRange(range).length) return;
+            if (!activeFormulaSelection.length) dismissToolbar();
+        });
+        if (window.MutationObserver && main) {
+            var formulaObserver = new MutationObserver(function () {
+                syncMathIds(); records.forEach(applyFormulaRecord);
+            });
+            formulaObserver.observe(main, { childList: true, subtree: true });
+        }
+        window.setTimeout(function () { syncMathIds(); records.forEach(applyFormulaRecord); }, 0);
+    }
+    function wireStaticQuiz() {
+        document.querySelectorAll(".quiz-question").forEach(function (card, index) {
+            var fieldset = card.querySelector(".quiz-options");
+            var submit = card.querySelector(".quiz-submit");
+            var feedback = card.querySelector(".quiz-feedback");
+            var explanation = card.querySelector("template.quiz-explanation");
+            if (!fieldset || !submit || !feedback || !card.dataset.answer) return;
+            fieldset.querySelectorAll('input[type="radio"]').forEach(function (input) {
+                input.name = "quiz-" + (index + 1);
+            });
+            submit.addEventListener("click", function () {
+                var selected = fieldset.querySelector('input[type="radio"]:checked');
+                if (!selected) {
+                    feedback.textContent = "请先选择一个选项。";
+                    feedback.hidden = false;
+                    return;
+                }
+                fieldset.querySelectorAll("input").forEach(function (input) { input.disabled = true; });
+                submit.disabled = true;
+                submit.textContent = "已提交";
+                var correct = selected.value === card.dataset.answer;
+                feedback.classList.toggle("correct", correct);
+                feedback.classList.toggle("incorrect", !correct);
+                feedback.textContent = (correct ? "正确。" : "已提交。") +
+                    "答案 / Réponse：" + card.dataset.answer + "。解析：";
+                if (explanation) feedback.appendChild(explanation.content.cloneNode(true));
+                feedback.hidden = false;
+                if (window.MathJax && window.MathJax.typesetPromise) window.MathJax.typesetPromise([feedback]);
+            });
+        });
+    }
+    assignConceptTable(); linkGlossaryTerms();
+    initReaderSettings(); initTocTracking(); initProgress(); initResizableReader(); initPersonalMarks();
+    wireStaticQuiz();
+})();
+
+
+    </script>
+</body>
+</html>

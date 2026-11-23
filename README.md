@@ -8,7 +8,31 @@
 
 项目已收录于 [VoltAgent](https://github.com/VoltAgent) 的 [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)、[StudentSuite](https://github.com/StudentSuite) 的 [awesome-skills-plugins-for-students](https://github.com/StudentSuite/awesome-skills-plugins-for-students)，以及 [yzfly](https://github.com/yzfly) 的 [awesome-skills-zh](https://github.com/yzfly/awesome-skills-zh)。
 
+## 两屏上手
+
+**第一屏：装一次（约 3 分钟）**
+
+1. 下载 [Lite 包](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.1/academic-translation-skills-v4.0.1-lite.zip)，解压后找到 `lite/skills/foreign-academic-translator-lite`。
+2. 把这个文件夹整个复制到宿主的 Skills 目录，例如 Claude Code 的 `.claude/skills/`、Codex 的 `.agents/skills/`。
+3. 进入该文件夹执行 `python -m pip install -r requirements.txt`，然后重新载入 Skills。
+
+短小讲义用 Lite 就够；PPTX、扫描件或结构复杂的材料，直接装 [Pro](skills/pro/README.md) 或 [Max](skills/max/README.md)，步骤见[安装](#安装)。
+
+**第二屏：发一条消息**
+
+把讲义和下面这段一起发给宿主，方括号换成你的信息：
+
+```text
+请使用 Lite 档的 `foreign-academic-translator-lite` Skill，把附件《[文件名]》翻译成中文学案。
+我要 HTML 和 DOCX；正文只放中文，术语首次出现时标注原文，文末加概念表；
+轻度注释，术语用 Wikidata 在线查询；暂时不需要章末测验。
+```
+
+成品在项目的 `output/<学案名>/` 里：HTML 是带目录、公式和阅读进度的阅读器，DOCX 方便打印或批注。想换布局、注释强度或加测验，直接改这段文字；完整参数见[使用指南](skills/max/skills/translation-orchestrator/docs/usage_guide.md)。
+
 ## 效果预览
+
+**[在线打开示例学案](https://koloyaaa.github.io/academic-translation-toolkit/)**：一份由本工具生成的真实成品，可以直接翻目录、看公式、试阅读进度和笔记。示例原文为课程讲义，仅作工具输出展示；课程编号、院系和学校信息已用 `******` 打码。
 
 以下示例由项目作者 Koloyaaa（Léo WEE）制作，展示 HTML 阅读器的导航、公式和阅读目录。
 
@@ -128,6 +152,7 @@ Pro 和 Max 支持 PDF、PPTX、DOCX、TXT 和纯文本。处理 PDF/PPTX 时，
 ├── skills/             Lite、Plus、Pro、Max 独立套件
 ├── prompts/           用户提示词模板
 ├── tests/             测试和提示词注入用例
+├── docs/              在线示例（GitHub Pages）
 └── assets/showcase/   示例截图
 ```
 
