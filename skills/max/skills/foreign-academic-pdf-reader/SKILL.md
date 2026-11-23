@@ -19,7 +19,7 @@ license: MIT
 1. 读取任务清单与[输出契约](references/output-contract.md)，只处理 `source_file` 指向的 PDF。
 2. 缓存未命中时运行 `scripts/pdf_extractor.py extract`，并从任务清单传入 `--vision-capability` 与 `--vision-capability-evidence`。它提取可选中文本和表格、枚举图片放置、渲染每一页，并给每页生成 `PDF_PAGE` 锚点，包括没有文字的页。少于 80 个原生文字字符的页面可用 Tesseract 辅助 OCR，默认语言 `eng+chi_sim`、最多 100 页；没有引擎或语言包时照常继续视觉核对。页面图像以 PDFium 渲染结果为准；提取出的原始图片流可能是遮罩、背景或越界图层，不能直接全部插入译稿。仅当 `vision_capability=available` 且用户启用配图时传入 `--image-dir` 和 `--placement-file`；无图像能力时省略这两个参数，不导出未经核准的正式图片。
 3. 先按任务清单中的 `vision_capability` 判定当前宿主与模型组合的能力。`available` 表示当前模型支持图像输入，且会话能将渲染页图的图像内容交给模型；文件路径、OCR、文字描述及模型品牌/型号本身都不算。若为 `available`，必须逐页直接查看 PDFium 渲染图，对照结构文本、表格和图片位置核实图中文字、公式、图表关系与页面顺序；图像是主要读取路径，不依赖安装 OCR。OCR 只是可选待核对草稿，不能代替看图；每条 OCR 草稿都必须通过 `ocr_text` observation 确认或纠正，没确认的草稿不会进入译稿。视觉检查同时识别结构提取未列出的矢量图、扫描内容和背景载荷。将无法辨认、遮挡或提取冲突如实记录。若清单为 `unavailable`，不创建视觉核对 JSON，直接按[输出契约](references/output-contract.md)生成 `SKIPPED_NO_VISION` 交接；不可把 OCR 当作已审核内容。
-4. 仅当能力为 `available` 时，每页必须在视觉核对 JSON 中出现，`checked_object_ids` 覆盖该页全部 `required_review_object_ids`，并明确记录是否需要图示讲解。只在确认为承载知识内容的图片时填入 `export_object_ids`；脚本从页渲染图中按页内坐标裁剪，自动裁掉越界区域，不会直接导出 PDF 原始遮罩流。
+4. 仅当能力为 `available` 时，每页必须在视觉核对 JSON 中出现，`checked_object_ids` 覆盖该页全部 `required_review_object_ids`，并明确记录是否需要图示讲解。只在确认为承载知识内容的图片时填入 `export_object_ids`；脚本从页渲染图中按页内坐标裁剪，自动裁掉越界区域，不会直接导出 PDF 原始遮罩流。裁切只用于提取完整的可见图像边界，不授权编辑图像内容。严格遵守[输出契约](references/output-contract.md)中的图片保真规则：不得调用生成或编辑能力修图、重绘、修色、擦除/替换对象、改写标签、添加文字/箭头/边框/高亮或覆盖层。导出的批准图片在后续阶段必须原样使用。
 5. 运行 `finalize` 并传入能力状态与证据。`available` 时必须提供逐页核对 JSON；只有退出码为 0 且 `gate=PASS` 才能进入翻译。`unavailable` 时不传核对 JSON，脚本生成 `gate=SKIPPED_NO_VISION`，可继续翻译提取文本但必须保留限制说明；这个状态绝不是视觉通过。`PARTIAL` 或 `FAIL` 保留缺陷并停止。只有视觉能力可用且存在候选页时，才把候选页交给共享视觉讲解 Skill。
 
 ## 安全与忠实度

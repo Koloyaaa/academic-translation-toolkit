@@ -102,7 +102,7 @@ python "<shared_runtime>\scripts\workflow_state.py" redecide `
 6. 对缺陷只修复受影响锚点和必要邻段；修复正文或测验后复审对应范围。存在未解决 P0/P1/P2 时不得进入发布。
 7. 语义审计通过后，对每个未命中的已选格式单独调用 `shared_runtime/scripts/builder.py`，每次只传一种格式。从同一份统一 Markdown 构建；所有格式构建器都必须拦截可见乱码、替换字符、异常控制字符和泄漏的 HTML 源码片段，HTML/DOCX 发布 Skill 再做相应格式检查。门禁失败时按报告定位修复统一 Markdown 或编码后重建；若修改影响正文语义，重跑受影响的审计范围。必须确认本次退出码为 0、返回路径正确且文件非空；目录中的旧同名成品不算本次成功。
 
-PDF/PPTX 的结构清单、原文文本、页图和视觉核对记录可能包含课程材料，只保留在本轮工作区，不写入持久缓存。视觉核对及按需图示说明完成后，运行对应 Reader 的 `pdf_extractor.py fingerprint` 或 `pptx_extractor.py fingerprint`，将摘要写入 `pdf_processing_fingerprint` 或 `pptx_processing_fingerprint`。持久正文/测验/审计签名只保存该摘要、原件哈希、设置和执行规则指纹；不依赖临时原文文件存在。PDF/PPTX 正式图片仅在用户启用 `include_images` 且逐页核对明确选择后留在正式输出目录。
+PDF/PPTX 的结构清单、原文文本、页图和视觉核对记录可能包含课程材料，只保留在本轮工作区，不写入持久缓存。视觉核对及按需图示说明完成后，运行对应 Reader 的 `pdf_extractor.py fingerprint` 或 `pptx_extractor.py fingerprint`，将摘要写入 `pdf_processing_fingerprint` 或 `pptx_processing_fingerprint`。持久正文/测验/审计签名只保存该摘要、原件哈希、设置和执行规则指纹；不依赖临时原文文件存在。PDF/PPTX 正式图片仅在用户启用 `include_images` 且逐页核对明确选择后留在正式输出目录，并且必须按 Reader 批准的原文件原样引用；不得生成或编辑替代图，后续排版只允许保持比例的整体缩放。遵守 Reader 输出契约中的图片保真规则，任何图示说明放在图片外。
 
 所有阶段用 `workflow_state.py check/start/mark` 记录输入、设置、成品哈希与耗时，并在每次 Skill 完成后运行 `redecide`。`mark` 对正文审计、测验审计和所选发布格式要求 `--gate PASS`；PDF/PPTX 视觉阶段只写本轮 Pro state，不写入持久 cache state。用量不可得时留空，不估算；缓存输入是 input token 的子集，不重复加到总量。只有对应门禁成功后才将译稿、测验或格式成品指纹写入 `.translator-cache-pro/`。并行分块可以继续使用，但只有编排器单写 state，并把每次决定按序记录。
 

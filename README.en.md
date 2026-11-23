@@ -1,6 +1,6 @@
 # Academic Translation Skills
 
-**Version: V4.0.1** · [中文](README.md) | English
+**Version: V4.0.2** · [中文](README.md) | English
 
 This project turns English, French, and other foreign-language course materials into Chinese study notes. It preserves course structure, terminology, formulas, examples, and exercises, and can produce HTML, DOCX, or Markdown. The [Chinese README](README.md) is authoritative if the two versions differ.
 
@@ -10,7 +10,7 @@ The project appears in [VoltAgent's awesome-agent-skills](https://github.com/Vol
 
 **Step 1: install Lite (about 3 minutes)**
 
-1. Download the [Lite package](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.1/academic-translation-skills-v4.0.1-lite.zip), unzip it, and locate `lite/skills/foreign-academic-translator-lite`.
+1. Download the [Lite package](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.2/academic-translation-skills-v4.0.2-lite.zip), unzip it, and locate `lite/skills/foreign-academic-translator-lite`.
 2. Copy that folder into the Skills directory of the AI tool you use, for example `.claude/skills/` in Claude Code or `.agents/skills/` in Codex.
 3. In that folder, run `python -m pip install -r requirements.txt`, then reload Skills.
 
@@ -55,7 +55,7 @@ Lite and Plus use the V3.1.3 monolithic workflow. Pro and Max each contain their
 
 Higher tiers may run more stages and checks, so processing can take longer. Download and use the tier that fits the material and review needs; you do not need to install all four.
 
-Download V4.0.1: [Lite](https://github.com/Koloyaaa/academic-translation-skills/releases/download/v4.0.1/academic-translation-skills-v4.0.1-lite.zip) · [Plus](https://github.com/Koloyaaa/academic-translation-skills/releases/download/v4.0.1/academic-translation-skills-v4.0.1-plus.zip) · [Pro](https://github.com/Koloyaaa/academic-translation-skills/releases/download/v4.0.1/academic-translation-skills-v4.0.1-pro.zip) · [Max](https://github.com/Koloyaaa/academic-translation-skills/releases/download/v4.0.1/academic-translation-skills-v4.0.1-max.zip) · [All tiers](https://github.com/Koloyaaa/academic-translation-skills/releases/download/v4.0.1/academic-translation-skills-v4.0.1-all.zip).
+Download V4.0.2: [Lite](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.2/academic-translation-skills-v4.0.2-lite.zip) · [Plus](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.2/academic-translation-skills-v4.0.2-plus.zip) · [Pro](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.2/academic-translation-skills-v4.0.2-pro.zip) · [Max](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.2/academic-translation-skills-v4.0.2-max.zip) · [All tiers](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.2/academic-translation-skills-v4.0.2-all.zip).
 
 ## Install the tier you need
 
@@ -128,4 +128,4 @@ Code, Skill instructions, and documentation that the project author is entitled 
 
 The four tier packages no longer include CSV terminology tables. Wikidata lookup is the default: only selected individual terms or short phrases are sent, never the handout. Results include multilingual candidates with links to their Wikidata items and must be checked against context. If no suitable match or Chinese label is available, or the service cannot be reached, the workflow falls back to contextual translation and reports the limitation. Choose `ai_auto` for terms that should not be sent to an external service.
 
-The project's release history is available on [GitHub Releases](https://github.com/Koloyaaa/academic-translation-skills/releases) and in the [changelog](CHANGELOG.md). V4.0.1 is the version described in this README; consult Releases for published packages.
+The project's release history is available on [GitHub Releases](https://github.com/Koloyaaa/academic-translation-toolkit/releases) and in the [changelog](CHANGELOG.md). V4.0.2 is the version described in this README; consult Releases for published packages.
