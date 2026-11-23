@@ -8,25 +8,27 @@
 
 项目已收录于 [VoltAgent](https://github.com/VoltAgent) 的 [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)、[StudentSuite](https://github.com/StudentSuite) 的 [awesome-skills-plugins-for-students](https://github.com/StudentSuite/awesome-skills-plugins-for-students)，以及 [yzfly](https://github.com/yzfly) 的 [awesome-skills-zh](https://github.com/yzfly/awesome-skills-zh)。
 
-## 两屏上手
+## 五分钟上手
 
-**第一屏：装一次（约 3 分钟）**
+**第一步：安装 Lite（约 3 分钟）**
 
 1. 下载 [Lite 包](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.1/academic-translation-skills-v4.0.1-lite.zip)，解压后找到 `lite/skills/foreign-academic-translator-lite`。
-2. 把这个文件夹整个复制到宿主的 Skills 目录，例如 Claude Code 的 `.claude/skills/`、Codex 的 `.agents/skills/`。
+2. 把这个文件夹整个复制到你所用 AI 工具的 Skills 目录，例如 Claude Code 的 `.claude/skills/`、Codex 的 `.agents/skills/`。
 3. 进入该文件夹执行 `python -m pip install -r requirements.txt`，然后重新载入 Skills。
 
 短小讲义用 Lite 就够；PPTX、扫描件或结构复杂的材料，直接装 [Pro](skills/pro/README.md) 或 [Max](skills/max/README.md)，步骤见[安装](#安装)。
 
-**第二屏：发一条消息**
+**第二步：发一条消息**
 
-把讲义和下面这段一起发给宿主，方括号换成你的信息：
+把讲义和下面这段话一起发给你正在使用的 AI 工具，方括号换成你的信息：
 
 ```text
 请使用 Lite 档的 `foreign-academic-translator-lite` Skill，把附件《[文件名]》翻译成中文学案。
 我要 HTML 和 DOCX；正文只放中文，术语首次出现时标注原文，文末加概念表；
 轻度注释，术语用 Wikidata 在线查询；暂时不需要章末测验。
 ```
+
+不想从零写？[Prompt 库](prompts/README.md) 里有预习、双语对照、考前复习等现成模板，复制后填好方括号即可。
 
 成品在项目的 `output/<学案名>/` 里：HTML 是带目录、公式和阅读进度的阅读器，DOCX 方便打印或批注。想换布局、注释强度或加测验，直接改这段文字；完整参数见[使用指南](skills/max/skills/translation-orchestrator/docs/usage_guide.md)。
 
@@ -55,18 +57,18 @@
 
 通常情况下，档位越高，可能运行的环节和检查越多，处理时间也可能更长。请按材料复杂度和检查需求下载、使用所需档位；不需要把四档全部安装。
 
-Lite 和 Plus 基于 V3.1.3 单体流程，支持 PDF、DOCX、TXT 和纯文本，旧版配图提取仅支持 PDF。PPTX、扫描页或结构复杂的材料建议使用 Pro 或 Max。Plus 需要在独立审阅上下文中运行质量审计 Skill；宿主不能提供该能力时会报告阻塞。
+Lite 和 Plus 基于 V3.1.3 单体流程，支持 PDF、DOCX、TXT 和纯文本，旧版配图提取仅支持 PDF。PPTX、扫描页或结构复杂的材料建议使用 Pro 或 Max。Plus 需要在独立审阅上下文中运行质量审计 Skill；AI 工具不能提供该能力时会报告阻塞。
 
 ## 安装
 
-本项目需要支持 Agent Skills 的宿主、Python 3.10 或更高版本，以及宿主调用本地文件和 Python 的能力。Pro、Max 处理 PPTX 时需要 LibreOffice 渲染幻灯片；PDF 使用 PDFium。HTML 公式使用 MathJax CDN，离线时可能显示 LaTeX 源码。
+本项目需要支持 Agent Skills 的 AI 工具、Python 3.10 或更高版本，以及 AI 工具调用本地文件和 Python 的能力。Pro、Max 处理 PPTX 时需要 LibreOffice 渲染幻灯片；PDF 使用 PDFium。HTML 公式使用 MathJax CDN，离线时可能显示 LaTeX 源码。
 
 ### 复制所选档位
 
 1. 下载或克隆仓库，选择一个档位。
-2. 将下表对应的 Skill 文件夹复制到宿主的 Skills 根目录。Plus、Pro、Max 需要复制该档的全部 Skill 文件夹，并保持同级。
+2. 将下表对应的 Skill 文件夹复制到 AI 工具的 Skills 根目录。Plus、Pro、Max 需要复制该档的全部 Skill 文件夹，并保持同级。
 3. 在所选档位的主 Skill 目录中，按该目录的 `requirements.txt` 安装依赖：`python -m pip install -r requirements.txt`。
-4. 重新载入宿主的 Skills，附上讲义，并调用下表中的入口。具体位置和安装方法见各档说明。
+4. 重新载入 AI 工具的 Skills，附上讲义，并调用下表中的入口。具体位置和安装方法见各档说明。
 
 | 档位 | 要复制的目录 | 入口 Skill |
 | --- | --- | --- |
@@ -75,9 +77,9 @@ Lite 和 Plus 基于 V3.1.3 单体流程，支持 PDF、DOCX、TXT 和纯文本�
 | Pro | `skills/pro/skills/` 下的十一个 Skill 目录 | `translation-orchestrator` |
 | Max | `skills/max/skills/` 下的十一个 Skill 目录 | `translation-orchestrator` |
 
-常见宿主的项目级 Skills 根目录如下。各宿主的发现方式可能不同，请以其官方文档为准。
+常见 AI 工具的项目级 Skills 根目录如下。各 AI 工具的发现方式可能不同，请以其官方文档为准。
 
-| 宿主 | 项目级 Skills 根目录 |
+| AI 工具 | 项目级 Skills 根目录 |
 | --- | --- |
 | [Codex](https://developers.openai.com/codex/skills) | `.agents/skills/` |
 | [Claude Code](https://code.claude.com/docs/en/skills) | `.claude/skills/` |
@@ -92,11 +94,11 @@ Lite 和 Plus 基于 V3.1.3 单体流程，支持 PDF、DOCX、TXT 和纯文本�
 
 其他安装细节见[技能套件安装说明](skills/max/skills/translation-orchestrator/README.md)。
 
-Pro、Max 使用相同的新版 Skill 名称。切换时先备份并移出宿主会扫描的旧档目录，再完整安装目标档位并重新载入；不要只替换编排入口或混用不同档位的资源。是否能同时发现同名 Skill 取决于宿主。
+Pro、Max 使用相同的新版 Skill 名称。切换时先备份并移出 AI 工具会扫描的旧档目录，再完整安装目标档位并重新载入；不要只替换编排入口或混用不同档位的资源。是否能同时发现同名 Skill 取决于 AI 工具。
 
 ### 按需加载
 
-安装一档所需的完整目录后，宿主按本轮任务加载需要执行的 Skill。Pro 和 Max 的入口负责选择读取、翻译、测验、审计和发布阶段；例如，没有选择测验时不加载出题与解析 Skill，只发布用户选择的格式。Pro 在每个 Skill 完成后重新决策；Max 按现有完整流程执行适用阶段。
+安装一档所需的完整目录后，AI 工具按本轮任务加载需要执行的 Skill。Pro 和 Max 的入口负责选择读取、翻译、测验、审计和发布阶段；例如，没有选择测验时不加载出题与解析 Skill，只发布用户选择的格式。Pro 在每个 Skill 完成后重新决策；Max 按现有完整流程执行适用阶段。
 
 安装完整目录是为了让编排器能够找到依赖，并不表示每次都执行全部 Skill。Lite 是单个 Skill；Plus 包含翻译入口和独立质量审计 Skill。详细参数和示例见[使用指南](skills/max/skills/translation-orchestrator/docs/usage_guide.md)与 [Prompt 库](prompts/README.md)。
 
@@ -115,11 +117,11 @@ Plus、Pro、Max：质量审计 Skill 与所选格式检查
 交付文件与处理限制
 ```
 
-实际执行每个 Skill 前，宿主应在对话中输出 `当前使用 Skill：<skill-name>`；缓存命中而未执行的 Skill 不声明。Pro 和 Max 默认将可独立处理的工作分给多个子 Agent，模型和推理档位不得高于用户选择；宿主不支持或无法保证这一条件时，使用兼容流程。
+实际执行每个 Skill 前，AI 工具应在对话中输出 `当前使用 Skill：<skill-name>`；缓存命中而未执行的 Skill 不声明。Pro 和 Max 默认将可独立处理的工作分给多个子 Agent，模型和推理档位不得高于用户选择；AI 工具不支持或无法保证这一条件时，使用兼容流程。
 
 ## 阅读与视觉核对
 
-Pro 和 Max 支持 PDF、PPTX、DOCX、TXT 和纯文本。处理 PDF/PPTX 时，如果当前模型支持图像输入且宿主能传递页图像素，必须逐页核对；只有明确没有图像输入能力时，才记录 `SKIPPED_NO_VISION`，继续处理可提取文本并列出未审核页。OCR 不能代替视觉核对。
+Pro 和 Max 支持 PDF、PPTX、DOCX、TXT 和纯文本。处理 PDF/PPTX 时，如果当前模型支持图像输入且 AI 工具能传递页图像素，必须逐页核对；只有明确没有图像输入能力时，才记录 `SKIPPED_NO_VISION`，继续处理可提取文本并列出未审核页。OCR 不能代替视觉核对。
 
 配图只在用户选择插图、且页图经过视觉核对并选中时导出。来源页码以居中的浅色细线夹注显示。Plus 的质量审计 Skill 若未实际查看图像，会标明视觉内容未审核；Lite 的检查不等同于独立内容审计。
 

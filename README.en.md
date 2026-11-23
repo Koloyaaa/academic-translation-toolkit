@@ -6,25 +6,27 @@ This project turns English, French, and other foreign-language course materials 
 
 The project appears in [VoltAgent's awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills), [StudentSuite's awesome-skills-plugins-for-students](https://github.com/StudentSuite/awesome-skills-plugins-for-students), and [yzfly's awesome-skills-zh](https://github.com/yzfly/awesome-skills-zh).
 
-## Up and running in two screens
+## Quick start
 
-**Screen 1: install once (about 3 minutes)**
+**Step 1: install Lite (about 3 minutes)**
 
 1. Download the [Lite package](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.1/academic-translation-skills-v4.0.1-lite.zip), unzip it, and locate `lite/skills/foreign-academic-translator-lite`.
-2. Copy that folder into your host's Skills directory, for example `.claude/skills/` in Claude Code or `.agents/skills/` in Codex.
+2. Copy that folder into the Skills directory of the AI tool you use, for example `.claude/skills/` in Claude Code or `.agents/skills/` in Codex.
 3. In that folder, run `python -m pip install -r requirements.txt`, then reload Skills.
 
 Lite covers short, simple material. For PPTX, scans, or complex layouts, install [Pro](skills/pro/README.md) or [Max](skills/max/README.md); full steps are under [Install](#install-the-tier-you-need).
 
-**Screen 2: send one message**
+**Step 2: send one message**
 
-Attach your material and send:
+Attach your material and send this to the AI tool you use, replacing the bracketed text:
 
 ```text
 Use the Lite-tier `foreign-academic-translator-lite` Skill to translate the attached lecture "[file name]" into Chinese study notes.
 Output HTML and DOCX. Chinese body only; keep the source term at first use and add a concept table at the end.
 Use light annotations and look up terminology on Wikidata; no end-of-chapter quiz for now.
 ```
+
+The [prompt library](prompts/README.md) has ready-made templates for preview, bilingual, and exam-review workflows (in Chinese); copy one and fill in the brackets.
 
 Deliverables land in `output/<lecture-name>/`: the HTML file opens as a reader with an outline, formulas, and reading progress; the DOCX is ready to print or annotate. To change the layout, annotation depth, or add a quiz, edit the message; see the [usage guide](skills/max/skills/translation-orchestrator/docs/usage_guide.md) for every option.
 
