@@ -6,7 +6,7 @@
 
 本项目将英语、法语等外文讲义整理成中文学案，支持术语标注、公式、表格、注释和章末测验。你可以根据材料和检查需求，选择 Lite、Plus、Pro 或 Max 档位，安装对应的 Agent Skills。
 
-项目已收录于 [VoltAgent](https://github.com/VoltAgent) 的 [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)、[StudentSuite](https://github.com/StudentSuite) 的 [awesome-skills-plugins-for-students](https://github.com/StudentSuite/awesome-skills-plugins-for-students)，以及 [yzfly](https://github.com/yzfly) 的 [awesome-skills-zh](https://github.com/yzfly/awesome-skills-zh)。
+项目已收录于 [VoltAgent](https://github.com/VoltAgent) 的 [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)、[heilcheng](https://github.com/heilcheng) 的 [awesome-agent-skills](https://github.com/heilcheng/awesome-agent-skills)、[StudentSuite](https://github.com/StudentSuite) 的 [awesome-skills-plugins-for-students](https://github.com/StudentSuite/awesome-skills-plugins-for-students)，以及 [yzfly](https://github.com/yzfly) 的 [awesome-skills-zh](https://github.com/yzfly/awesome-skills-zh)。
 
 ## 五分钟上手
 

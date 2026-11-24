@@ -4,7 +4,7 @@
 
 This project turns English, French, and other foreign-language course materials into Chinese study notes. It preserves course structure, terminology, formulas, examples, and exercises, and can produce HTML, DOCX, or Markdown. The [Chinese README](README.md) is authoritative if the two versions differ.
 
-The project appears in [VoltAgent's awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills), [StudentSuite's awesome-skills-plugins-for-students](https://github.com/StudentSuite/awesome-skills-plugins-for-students), and [yzfly's awesome-skills-zh](https://github.com/yzfly/awesome-skills-zh).
+The project appears in [VoltAgent's awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills), [heilcheng's awesome-agent-skills](https://github.com/heilcheng/awesome-agent-skills), [StudentSuite's awesome-skills-plugins-for-students](https://github.com/StudentSuite/awesome-skills-plugins-for-students), and [yzfly's awesome-skills-zh](https://github.com/yzfly/awesome-skills-zh).
 
 ## Quick start
 
