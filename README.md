@@ -169,3 +169,13 @@ Pro 和 Max 支持 PDF、PPTX、DOCX、TXT 和纯文本。处理 PDF/PPTX 时，
 ## 版本发布
 
 [V4.0.2 下载与发布说明](https://github.com/Koloyaaa/academic-translation-toolkit/releases/tag/v4.0.2)；详细历史见 [CHANGELOG](CHANGELOG.md)。
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=koloyaaa%2Facademic-translation-toolkit&type=date&legend=top-left">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=koloyaaa/academic-translation-toolkit&type=date&theme=dark&legend=top-left" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=koloyaaa/academic-translation-toolkit&type=date&legend=top-left" />
+    <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=koloyaaa/academic-translation-toolkit&type=date&legend=top-left" />
+  </picture>
+</a>

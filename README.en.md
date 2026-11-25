@@ -129,3 +129,13 @@ Code, Skill instructions, and documentation that the project author is entitled 
 The four tier packages no longer include CSV terminology tables. Wikidata lookup is the default: only selected individual terms or short phrases are sent, never the handout. Results include multilingual candidates with links to their Wikidata items and must be checked against context. If no suitable match or Chinese label is available, or the service cannot be reached, the workflow falls back to contextual translation and reports the limitation. Choose `ai_auto` for terms that should not be sent to an external service.
 
 The project's release history is available on [GitHub Releases](https://github.com/Koloyaaa/academic-translation-toolkit/releases) and in the [changelog](CHANGELOG.md). V4.0.2 is the version described in this README; consult Releases for published packages.
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=koloyaaa%2Facademic-translation-toolkit&type=date&legend=top-left">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=koloyaaa/academic-translation-toolkit&type=date&theme=dark&legend=top-left" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=koloyaaa/academic-translation-toolkit&type=date&legend=top-left" />
+    <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=koloyaaa/academic-translation-toolkit&type=date&legend=top-left" />
+  </picture>
+</a>
