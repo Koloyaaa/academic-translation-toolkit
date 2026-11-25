@@ -86,7 +86,7 @@ python "<shared_runtime>\scripts\workflow_state.py" redecide `
 - 偏好文件不存在时不询问历史偏好。只询问确实影响产物、且无法从本轮内容、材料或已接受偏好推断的必要选项；不要重复确认已确定值。无测验时不询问测验语言。
 - 全文交付是默认目标。长材料按页或章节连续完成，不因篇幅提前结束。遇到真实阻塞时准确说明页码和未完成项。
 
-可复用选项包括：输出格式 `html/docx/md`；布局 `translation_only`、`translation_first`、`source_first`、`concept_highlight`；概念表开关；注释等级；源文件配图开关；术语策略 `wikidata` 或 `ai_auto`。术语策略未指定时默认 `wikidata`；用户选择 `ai_auto` 时不访问外部服务。历史偏好中的 `system_glossary` 映射为 `wikidata`。收齐参数后只将这些可复用值和更新时间写回偏好，不保存学科、源语言、源文或提取文本。
+可复用选项包括：输出格式 `html/docx/md`；布局 `translation_only`、`translation_first`、`source_first`、`concept_highlight`；概念表开关；注释等级；源文件配图开关；术语策略 `wikidata` 或 `ai_auto`。术语策略未指定时默认 `wikidata`；用户选择 `ai_auto` 时不访问外部服务。共享查询脚本默认使用用户级本地缓存：有目标语言标签的成功候选保留 30 天，无匹配或缺少目标语言标签的候选保留 6 小时，`UNAVAILABLE` 不缓存；用户明确要求强制重新查询时传 `--no-cache`。限流或服务不可用后停止发送本批剩余术语，继续上下文翻译并说明未核验项。历史偏好中的 `system_glossary` 映射为 `wikidata`。收齐参数后只将这些可复用值和更新时间写回偏好，不保存学科、源语言、源文或提取文本。
 
 ## 任务清单与执行
 

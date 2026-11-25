@@ -33,7 +33,7 @@ license: MIT
 - show_concept_table 为 true 时只生成一张术语汇总表，按首次出现顺序列出正文实际出现的外文词、中文译名和简短释义；不要另建重复的概念表。源文自带的表格照常完整翻译。为 false 时不生成汇总表。
 - 注释按 annotate_level 执行：无注释不加解读；轻度只解释不直观的要点，不作章节归纳；高中生视角在每个概念或知识点首次出现处给简短解读，较长结论或证明说明关键推理，章末简要归纳知识关系，避免复述正文或重复解释同一概念；重度再逐项展开公式思路、例子与易错点。注释用 <div class="note">通俗解读：……</div> 标记，不伪装成源文。
 - 对所有随稿图片严格遵守 [PDF Reader 输出契约](../foreign-academic-pdf-reader/references/output-contract.md)的“图片保真”规则：只引用 Reader 批准的原图文件，不生成、编辑或重绘替代图；只允许保持长宽比的整体缩放。翻译标签、箭头和图示解释一律放在图片外，不覆盖或改动图片像素。适用于 PDF 和 PPTX；明确的用户修图请求也必须保留原图并另存标明的副本。
-- glossary_mode 为 wikidata 时，只挑选本轮确有必要核对的术语，每批最多十个，并通过 shared_runtime/scripts/wikidata_lookup.py 查询。请求只包含单个术语或短语，不得发送整句、段落或讲义。Wikidata 返回的是社区维护的候选，不是学科规范词典；结合本讲义的学科和上下文判断，不得默认采用第一条，并记录实际采用的 QID 与链接。没有合适候选、中文标签缺失、结果有歧义或 API 不可用时，按上下文翻译并在交付说明中写明限制。ai_auto 时不调用外部 API。
+- glossary_mode 为 wikidata 时，只挑选本轮确有必要核对的术语，每批最多十个，并通过 shared_runtime/scripts/wikidata_lookup.py 查询。请求只包含单个术语或短语，不得发送整句、段落或讲义。Wikidata 返回的是社区维护的候选，不是学科规范词典；结合本讲义的学科和上下文判断，不得默认采用第一条，并记录实际采用的 QID 与链接。没有合适候选、中文标签缺失、结果有歧义或 API 不可用时，按上下文翻译并在交付说明中写明限制。本地 Wikidata 缓存默认启用；用户明确要求强制重新查询时添加 `--no-cache`（仍会连接 Wikidata）；若术语不应发送到外部服务，使用 `glossary_mode=ai_auto`。ai_auto 时不调用外部 API。
 - `include_images=true` 且源件为 PDF 时，只使用 PDF Reader 经逐页视觉核对选中的 `image_dir` 图片和 `placement_file`；这些图像是从页面渲染图按图像边界裁出的可见区域，坐标已裁剪到页面。不能再调用旧 `image_extractor.py` 扫出并插入所有 PDF 原始图像流。
 - 图片说明只能陈述正文能够确认的信息；不能确认图意时使用中性说明。PDF 坐标从页面顶部起算，单位为点；图片按页码与纵坐标排序，并放在同页最接近的文字块旁。构建器会在成品中移除定位标记。
 - 若 source_kind 为 `pdf` 且 `vision_capability=available`，必须先确认 `pdf_manifest_file` 的 `gate=PASS`。按物理 PDF 页序翻译文本、表格和已核对视觉内容，coverage index 使用 `PDF_PAGE:<页>/PDF_OBJECT:<对象ID>`；每页内容块开头保留独立标记 `**来源：PDF第 X 页**`。画面中的印刷页码只能作为补充，不能取代物理页码。统一译稿只保留这个来源标记，不自行添加横线装饰；发布器负责将其排成居中浅色细线夹注。
