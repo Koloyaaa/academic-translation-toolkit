@@ -17,6 +17,7 @@ from .base import (
     annotate_first_occurrences,
     protect_math,
     restore_math,
+    mark_handout_completion_blocks,
     source_marker_label,
     validate_rendered_text,
 )
@@ -454,6 +455,50 @@ def _add_list(doc, el):
         _add_runs_with_math(para, _iter_children(item))
 
 
+def _apply_completion_style(para):
+    """Style answer/proof paragraphs as a soft, editable callout."""
+    from docx.oxml import OxmlElement
+    from docx.oxml.ns import qn
+    from docx.shared import Pt
+
+    p_pr = para._p.get_or_add_pPr()
+    shading = OxmlElement("w:shd")
+    shading.set(qn("w:val"), "clear")
+    shading.set(qn("w:color"), "auto")
+    shading.set(qn("w:fill"), "EEF6F8")
+    p_pr.append(shading)
+    borders = OxmlElement("w:pBdr")
+    left = OxmlElement("w:left")
+    left.set(qn("w:val"), "single")
+    left.set(qn("w:sz"), "16")
+    left.set(qn("w:space"), "6")
+    left.set(qn("w:color"), "2A7A9C")
+    borders.append(left)
+    p_pr.append(borders)
+    para.paragraph_format.first_line_indent = Pt(0)
+    para.paragraph_format.left_indent = Pt(10)
+    para.paragraph_format.right_indent = Pt(8)
+
+
+def _add_blockquote(doc, el):
+    """Handle generated completion blocks without changing ordinary quotes."""
+    if "smart-completion" not in (el.get("class") or "").split():
+        for child in el:
+            _walk_blocks(child, lambda item: _TAG_HANDLERS[item.tag](doc, item))
+        return
+
+    created = []
+    for child in el:
+        before = len(doc.paragraphs)
+        if child.tag == "p":
+            _add_paragraph(doc, child)
+        elif child.tag in {"ul", "ol"}:
+            _add_list(doc, child)
+        created.extend(doc.paragraphs[before:])
+    for para in created:
+        _apply_completion_style(para)
+
+
 def _style_header_cell(doc_cell):
     """表头单元格美化：柔和浅蓝底纹填充 DCE9F3（tcPr/shd），文字加粗深蓝 1F4E79，垂直居中。"""
     from docx.oxml import OxmlElement
@@ -540,10 +585,11 @@ _TAG_HANDLERS = {
     "table": _add_table,
     "ul": _add_list,
     "ol": _add_list,
+    "blockquote": _add_blockquote,
 }
 
 # 需要处理的块级标签
-_BLOCK_TAGS = frozenset(("h1", "h2", "h3", "p", "table", "ul", "ol"))
+_BLOCK_TAGS = frozenset(("h1", "h2", "h3", "p", "table", "ul", "ol", "blockquote"))
 
 
 def _walk_blocks(el, fn):
@@ -755,6 +801,7 @@ def build_docx(md_content: str, output_path: Path) -> Path:
 
     body_html = annotate_first_occurrences(body_html)
     body_html = restore_math(body_html, maths)
+    body_html = mark_handout_completion_blocks(body_html)
     validate_rendered_text(body_html, "DOCX")
     fragments = _parse_body(body_html)
     doc = Document()

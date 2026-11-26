@@ -34,8 +34,11 @@ STAGE_SKILLS = {
     "quiz": ("foreign-academic-quiz-generator", "foreign-academic-solution-explainer"),
     "audit_translation": ("foreign-academic-quality-auditor",),
     "audit_quiz": ("foreign-academic-quality-auditor",),
+    "complete_handout": ("foreign-academic-handout-completer",),
+    "audit_completion": ("foreign-academic-quality-auditor",),
     "publish_html": ("foreign-academic-html-publisher",),
     "publish_docx": ("foreign-academic-docx-publisher",),
+    "publish_pptx": ("foreign-academic-pptx-publisher",),
 }
 
 
@@ -192,6 +195,8 @@ def _stage_distributions(stage: str, task: dict[str, Any], config: dict[str, Any
         packages.append("markdown")
     elif stage == "publish_docx":
         packages.extend(("python-docx", "markdown", "lxml", "Pillow", "matplotlib", "latex2mathml"))
+    elif stage == "publish_pptx":
+        packages.extend(("python-pptx", "markdown", "Pillow"))
     return sorted(set(packages), key=str.casefold)
 
 
@@ -349,6 +354,8 @@ def stage_dependency_paths(task: dict[str, Any], stage: str, config: dict[str, A
         # Hash each selected Skill directory so references, examples, and future support files
         # cannot silently change behavior while a cached result is reused.
         dependencies.extend(sibling_root / skill for skill in stage_skill_names(stage, task))
+    if stage == "audit_completion":
+        dependencies.append(sibling_root / "foreign-academic-handout-completer")
 
     if stage == "translate":
         glossary_mode = str(config.get("glossary_mode", "wikidata")).strip().lower() or "wikidata"
@@ -360,13 +367,13 @@ def stage_dependency_paths(task: dict[str, Any], stage: str, config: dict[str, A
             if asset_path is not None:
                 dependencies.append(asset_path)
 
-    if stage in {"publish_html", "publish_docx"}:
+    if stage in {"publish_html", "publish_docx", "publish_pptx"}:
         for key in ("image_dir", "placement_file"):
             asset_path = resolve_task_path(task, key)
             if asset_path is not None:
                 dependencies.append(asset_path)
 
-    if stage in {"publish_html", "publish_docx", "publish_md"}:
+    if stage in {"publish_html", "publish_docx", "publish_md", "publish_pptx"}:
         dependencies.extend(runtime / relative for relative in BUILDER_RUNTIME_PATHS)
 
     # Stable de-duplication avoids hashing a file twice when a caller also passed it via --inputs.
@@ -407,6 +414,8 @@ def stage_context(state: dict[str, Any], stage: str, task: dict[str, Any], confi
         if stage in model_stages:
             required_config.append("vision_model_id")
         config_keys = sorted(set([*config_keys, *required_config]))
+    if stage in {"complete_handout", "audit_completion"}:
+        config_keys = sorted(set([*config_keys, "smart_handout_completion", "layout", "source_language", "discipline"]))
     base_inputs = combine_inputs(inputs, [])
     base_fingerprints = [digest_path(path) for path in base_inputs]
     previous = state["stages"].get(stage, {})

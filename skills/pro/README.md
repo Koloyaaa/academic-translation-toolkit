@@ -2,10 +2,13 @@
 
 Pro 使用独立完整的 Skills 套件，入口为 [`translation-orchestrator`](skills/translation-orchestrator/SKILL.md)。套件索引和工作流见 [`skills/README.md`](skills/README.md)。
 
+Pro 支持 PDF、PPTX、DOCX、TXT 和纯文本输入，可输出 HTML、DOCX、Markdown 和可编辑 PPTX，并可选启用学案挖空补全。Pro 与 Max 具有相同的材料格式、输出格式、补全和审计能力；Pro 的特点是每个 Skill 完成后都重新评估并记录下一阶段。四档对照见[项目首页](../../README.md#四档功能对比)。
+
 ## 执行规则
 
 - 正文必须经过独立全文语义审计。
 - 只有用户选择测验时才生成测验，并对测验进行独立审计。
+- 用户可选择补全明确挖空；数学证明会检索整份讲义内的关联知识点，再经独立审计核对推理、定理条件和依据。
 - 只发布用户选择的格式；每种格式通过对应检查后才交付。
 - PDF/PPTX 在当前模型和宿主能传递页图像素时逐页视觉核对；仅在该组合明确没有图像输入能力时记录 `SKIPPED_NO_VISION`，并披露未审核页。
 - 每个 Skill 完成后，编排器调用本档的 `workflow_state.py redecide`，据依赖、选择和门禁重新确定下一步。脚本把结果写入任务 state 和本轮决策日志，并阻止未授权的阶段启动。
@@ -16,7 +19,7 @@ Pro 使用独立完整的 Skills 套件，入口为 [`translation-orchestrator`]
 
 ## 安装与验证
 
-将 [`skills`](skills/) 下十一个 Skill 目录安装到同一个 Skills 根目录，并按 [`编排器使用指南`](skills/translation-orchestrator/README.md) 安装依赖与运行。Pro 本档规则和资源都位于本目录内。
+将 [`skills`](skills/) 下十三个 Skill 目录安装到同一个 Skills 根目录，并按 [`编排器使用指南`](skills/translation-orchestrator/README.md) 安装依赖与运行。Pro 本档规则和资源都位于本目录内；PPTX 输出只在 Pro/Max 提供。
 
 在本档目录（即本文件所在目录）运行：
 

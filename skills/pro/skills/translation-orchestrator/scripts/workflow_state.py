@@ -31,8 +31,8 @@ GATE_VALUES = {"NONE", "PASS", "FAIL", "PARTIAL", "SKIPPED_NO_VISION"}
 STAGE_ORDER = (
     "parse_pdf", "review_pdf", "explain_pdf",
     "parse_pptx", "review_pptx", "explain_pptx",
-    "translate", "quiz", "audit_translation", "audit_quiz",
-    "publish_html", "publish_docx", "publish_md",
+    "translate", "quiz", "audit_translation", "audit_quiz", "complete_handout",
+    "publish_html", "publish_docx", "publish_md", "publish_pptx", "audit_completion",
 )
 NON_SKILL_STAGE_ACTORS = {"publish_md": "shared-markdown-builder"}
 
@@ -47,8 +47,11 @@ STAGE_SKILLS = {
     "quiz": ("foreign-academic-quiz-generator", "foreign-academic-solution-explainer"),
     "audit_translation": ("foreign-academic-quality-auditor",),
     "audit_quiz": ("foreign-academic-quality-auditor",),
+    "complete_handout": ("foreign-academic-handout-completer",),
+    "audit_completion": ("foreign-academic-quality-auditor",),
     "publish_html": ("foreign-academic-html-publisher",),
     "publish_docx": ("foreign-academic-docx-publisher",),
+    "publish_pptx": ("foreign-academic-pptx-publisher",),
 }
 
 
@@ -94,7 +97,13 @@ def validate_pro_metadata(task: dict[str, Any]) -> None:
     expected_log = output_path / f"{DECISION_LOG_PREFIX}{run_id}.jsonl"
     if not isinstance(decision_log, str) or Path(decision_log).expanduser().resolve() != expected_log:
         raise ValueError(f"decision_log_file must point to this run's Pro-only log: {expected_log}")
-    for field in ("cache_core_markdown", "cache_coverage_index_file", "cache_quiz_file"):
+    for field in (
+        "cache_core_markdown",
+        "cache_coverage_index_file",
+        "cache_quiz_file",
+        "cache_completed_markdown",
+        "cache_completion_ledger_file",
+    ):
         value = task.get(field)
         if isinstance(value, str) and value.strip():
             try:
@@ -275,6 +284,8 @@ def _stage_distributions(stage: str, task: dict[str, Any], config: dict[str, Any
         packages.append("markdown")
     elif stage == "publish_docx":
         packages.extend(("python-docx", "markdown", "lxml", "Pillow", "matplotlib", "latex2mathml"))
+    elif stage == "publish_pptx":
+        packages.extend(("python-pptx", "markdown", "Pillow"))
     return sorted(set(packages), key=str.casefold)
 
 
@@ -432,6 +443,9 @@ def stage_dependency_paths(task: dict[str, Any], stage: str, config: dict[str, A
         # Hash each selected Skill directory so references, examples, and future support files
         # cannot silently change behavior while a cached result is reused.
         dependencies.extend(sibling_root / skill for skill in stage_skill_names(stage, task))
+    if stage == "audit_completion":
+        # A completion audit cache is valid only for the completion rules that produced its output.
+        dependencies.append(sibling_root / "foreign-academic-handout-completer")
 
     if stage == "translate":
         glossary_mode = str(config.get("glossary_mode", "wikidata")).strip().lower() or "wikidata"
@@ -443,13 +457,13 @@ def stage_dependency_paths(task: dict[str, Any], stage: str, config: dict[str, A
             if asset_path is not None:
                 dependencies.append(asset_path)
 
-    if stage in {"publish_html", "publish_docx"}:
+    if stage in {"publish_html", "publish_docx", "publish_pptx"}:
         for key in ("image_dir", "placement_file"):
             asset_path = resolve_task_path(task, key)
             if asset_path is not None:
                 dependencies.append(asset_path)
 
-    if stage in {"publish_html", "publish_docx", "publish_md"}:
+    if stage in {"publish_html", "publish_docx", "publish_md", "publish_pptx"}:
         dependencies.extend(runtime / relative for relative in BUILDER_RUNTIME_PATHS)
 
     # Stable de-duplication avoids hashing a file twice when a caller also passed it via --inputs.
@@ -507,6 +521,8 @@ def stage_context(state: dict[str, Any], stage: str, task: dict[str, Any], confi
         for key in non_hydratable:
             fallback.pop(key, None)
     config_keys = sorted(set([*config_keys, "workflow_tier", "quality_profile", "cache_dir"]))
+    if stage in {"complete_handout", "audit_completion"}:
+        config_keys = sorted(set([*config_keys, "smart_handout_completion", "layout", "source_language", "discipline"]))
     config = resolve_config(task, config_keys, fallback)
     all_inputs = combine_inputs(base_inputs, stage_dependency_paths(task, stage, config))
     input_fingerprints = [digest_path(path) for path in all_inputs]
@@ -521,7 +537,7 @@ def stage_context(state: dict[str, Any], stage: str, task: dict[str, Any], confi
 def validate_gate(task: dict[str, Any], stage: str, gate: str) -> None:
     if gate not in GATE_VALUES:
         raise ValueError(f"Unknown gate status for {stage}: {gate}")
-    if stage in {"audit_translation", "audit_quiz", "publish_html", "publish_docx", "publish_md"} and gate != "PASS":
+    if stage in {"audit_translation", "audit_quiz", "audit_completion", "publish_html", "publish_docx", "publish_md", "publish_pptx"} and gate != "PASS":
         raise ValueError(f"{stage} can be marked only after its independent audit or format gate is PASS")
     if stage in {"review_pdf", "review_pptx"}:
         capability = task.get("vision_capability")
@@ -573,14 +589,19 @@ def required_stages(task: dict[str, Any]) -> list[str]:
     stages.append("audit_translation")
     if quiz_selected(task):
         stages.append("audit_quiz")
+    completion_enabled = is_enabled(task.get("smart_handout_completion"))
+    if completion_enabled:
+        stages.append("complete_handout")
     formats = task.get("output_formats", ["md"])
     if not isinstance(formats, list) or not formats:
         raise ValueError("output_formats must be a non-empty list containing only selected formats")
-    format_stages = {"html": "publish_html", "docx": "publish_docx", "md": "publish_md"}
+    format_stages = {"html": "publish_html", "docx": "publish_docx", "md": "publish_md", "pptx": "publish_pptx"}
     for output_format in formats:
         if output_format not in format_stages:
             raise ValueError(f"Unsupported Pro output format: {output_format}")
         stages.append(format_stages[output_format])
+    if completion_enabled:
+        stages.append("audit_completion")
     return stages
 
 
@@ -600,10 +621,23 @@ def stage_dependencies(stage: str, task: dict[str, Any]) -> list[str]:
         return ["translate"]
     if stage == "audit_quiz":
         return ["quiz"]
+    if stage == "complete_handout":
+        dependencies = ["audit_translation"]
+        if quiz_selected(task):
+            dependencies.append("audit_quiz")
+        return dependencies
+    if stage == "audit_completion":
+        dependencies = ["complete_handout"]
+        formats = task.get("output_formats", ["md"])
+        format_stages = {"html": "publish_html", "docx": "publish_docx", "md": "publish_md", "pptx": "publish_pptx"}
+        dependencies.extend(format_stages[output_format] for output_format in formats)
+        return dependencies
     if stage.startswith("publish_"):
         dependencies = ["audit_translation"]
         if quiz_selected(task):
             dependencies.append("audit_quiz")
+        if is_enabled(task.get("smart_handout_completion")):
+            dependencies.append("complete_handout")
         return dependencies
     return []
 

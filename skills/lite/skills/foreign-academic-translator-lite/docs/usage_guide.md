@@ -1,6 +1,6 @@
 # 使用指南
 
-本技能将 PDF、DOCX 或 TXT 格式的外文学案整理为中文学习材料，并可导出 HTML、DOCX 或 Markdown。扫描版 PDF 需要先 OCR。PDF 配图功能面向内嵌位图，不能保证提取矢量图。HTML 公式由 MathJax CDN 在线渲染，打开 HTML 时需要联网；离线时公式可能显示为 LaTeX 源码。
+本技能将 PDF、DOCX、TXT 或纯文本格式的外文学案整理为中文学习材料，并可导出 HTML、DOCX 或 Markdown。Lite 不提供 PPTX 输入读取、PPTX 输出或学案挖空补全；需要这些功能时请选择 Pro/Max（挖空补全也支持 Plus）。扫描版 PDF 需要先 OCR。PDF 配图功能面向内嵌位图，不能保证提取矢量图。HTML 公式由 MathJax CDN 在线渲染，打开 HTML 时需要联网；离线时公式可能显示为 LaTeX 源码。
 
 ## 快速开始
 

@@ -12,6 +12,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS_DIR = REPO_ROOT / "skills" / "max" / "skills" / "translation-orchestrator" / "scripts"
 sys.path.insert(0, str(SCRIPTS_DIR))
 import builder  # noqa: E402
+from builders.base import strip_handout_completion_markers
 
 
 class BuilderFailureTests(unittest.TestCase):
@@ -123,6 +124,39 @@ class BuilderFailureTests(unittest.TestCase):
         self.assertIn("translated_doc.html", html)
         self.assertNotIn(".building", html)
         self.assertFalse(any(".building" in item.name for item in output_dir.iterdir()))
+
+    def test_completion_is_visible_in_all_selected_formats_and_hidden_by_default_in_html(self):
+        markdown_text = (
+            "# Synthetic lesson\n\nA theorem leaves an explicit blank: ______.\n\n"
+            "<!-- HANDOUT_COMPLETION_SLOT:slot-001 -->\n"
+            "> **智能补全**\n> **答案：** \u03b1 + \u03b2\n"
+            "> **推理：** 由讲义第 2 节的定义\n> **依据：** 讲义第 2 节，定义 1\n"
+        )
+        results = builder.build_all(markdown_text, self.output_dir, ["html", "docx", "md", "pptx"])
+
+        html = results["html"].read_text(encoding="utf-8")
+        self.assertIn('<details class="smart-completion">', html)
+        self.assertIn("<summary>智能补全（点击查看）</summary>", html)
+        self.assertNotRegex(html, r'<details class="smart-completion"[^>]*\bopen\b')
+        self.assertNotIn("HANDOUT_COMPLETION_SLOT", html)
+
+        markdown_output = results["md"].read_text(encoding="utf-8")
+        self.assertNotIn("HANDOUT_COMPLETION_SLOT", markdown_output)
+        self.assertIn("**答案：**", markdown_output)
+
+        from docx import Document
+        docx_text = "\n".join(paragraph.text for paragraph in Document(results["docx"]).paragraphs)
+        self.assertIn("智能补全", docx_text)
+        self.assertIn("α + β", docx_text)
+
+        from pptx import Presentation
+        presentation = Presentation(results["pptx"])
+        pptx_text = "\n".join(
+            shape.text for slide in presentation.slides for shape in slide.shapes if getattr(shape, "has_text_frame", False)
+        )
+        self.assertIn("智能补全", pptx_text)
+        self.assertIn("α + β", pptx_text)
+        self.assertTrue(strip_handout_completion_markers(markdown_text).find("slot-001") == -1)
 
 
 if __name__ == "__main__":

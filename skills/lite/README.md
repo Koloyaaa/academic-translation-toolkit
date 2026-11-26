@@ -2,6 +2,8 @@
 
 此目录内含一个可单独安装的 Skill：`foreign-academic-translator-lite`。它来自旧版 V3.1.3 单体 Skill 的完整资源副本，另增加成品文件可读性检查；Lite 不声称完成独立语义审计。
 
+Lite 支持 PDF、DOCX、TXT 和纯文本输入，可输出 HTML、DOCX 或 Markdown。它不读取或生成 PPTX，也不提供学案挖空补全。需要独立内容审计或补全挖空可选 Plus；需要 PPTX 读写或页级视觉核对可选 Pro 或 Max。四档能力对照见[项目首页](../../README.md#四档功能对比)。
+
 ## 安装与调用
 
 把 `skills/foreign-academic-translator-lite/` 整个文件夹复制到所用 Harness 的技能目录，例如 Codex 项目的 `.agents/skills/foreign-academic-translator-lite/`。脚本、模板、依赖和 Lite 专用检查器都在此文件夹内，不依赖其他档位。默认通过 Wikidata 公开 API 在线查询术语；其结构化数据采用 CC0 1.0。查询只发送单个术语或短语。安装后选择或调用 `foreign-academic-translator-lite`。

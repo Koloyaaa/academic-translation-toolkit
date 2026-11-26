@@ -10,10 +10,12 @@ from .base import (
     WATERMARK,
     load_css,
     annotate_first_occurrences,
+    mark_handout_completion_blocks,
     protect_math,
     restore_math,
     style_source_markers,
     validate_rendered_text,
+    wrap_handout_completion_details,
 )
 
 FONT_AWESOME_CSS_URL = "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css"
@@ -1172,6 +1174,7 @@ def build_html(
         required=require_interactive_quiz,
     )
     body_html = annotate_first_occurrences(_render_body(style_source_markers(prepared_md, "html")))
+    body_html = wrap_handout_completion_details(mark_handout_completion_blocks(body_html))
     body_html = restore_math(body_html, maths)
     body_html = _normalize_course_header(body_html)
     body_html = _add_document_title_class(body_html, layout)
@@ -1336,6 +1339,11 @@ def build_html(
         "background: #fdeecb; border-radius: 4px; padding: 1px 8px; margin-right: 8px; }\n"
         ".tipbox { background: #eff4ff; border: 1px solid #c9ddf9; border-left: 4px solid #2a7a9c; "
         "border-radius: 0 8px 8px 0; padding: 10px 16px; margin: 14px 0 22px; font-size: 14px; color: #1d3a6f; }\n"
+        ".smart-completion { margin: 14px 0 22px; padding: 10px 16px; border: 1px solid var(--border); "
+        "border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; background: var(--surface-soft); }\n"
+        ".smart-completion summary { cursor: pointer; color: var(--accent-strong); font-weight: 700; "
+        "list-style-position: inside; } .smart-completion summary:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }\n"
+        ".smart-completion blockquote { margin: 8px 0 2px; padding: 0; border: 0; color: var(--text); }\n"
         "#reading-progress { position: fixed; right: 16px; bottom: 16px; z-index: 1001; font-size: 20px; "
         "font-weight: 600; line-height: 1; letter-spacing: .5px; color: #1a3c5e; background: rgba(255,255,255,.92); "
         "border: 1px solid #dfe6ef; border-radius: 20px; padding: 6px 14px; "

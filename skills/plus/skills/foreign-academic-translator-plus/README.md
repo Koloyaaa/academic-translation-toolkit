@@ -1,10 +1,10 @@
 # Plus 安装说明
 
-Plus 基于旧版 V3.1.3 单体翻译流程，并在交付前增加独立审计。参数和使用方法见[使用指南](docs/usage_guide.md)。
+Plus 基于旧版 V3.1.3 单体翻译流程，并在交付前增加独立审计。用户可选启用学案挖空补全，补全结果也由独立审计复核；本档不读取或输出 PPTX。参数和使用方法见[使用指南](docs/usage_guide.md)及[四档功能对比](../../../../README.md#四档功能对比)。
 
 ## 安装
 
-将 Plus 套件中的 `foreign-academic-translator-plus` 和 `foreign-academic-quality-auditor-plus` 两个目录完整复制到同一个 Skills 根目录，例如 Codex 项目的 `.agents/skills/`。在翻译 Skill 目录使用 Python 3.10 或更高版本安装依赖：
+将 Plus 套件中的 `foreign-academic-translator-plus`、`foreign-academic-quality-auditor-plus` 和 `foreign-academic-handout-completer-plus` 三个目录完整复制到同一个 Skills 根目录，例如 Codex 项目的 `.agents/skills/`。在翻译 Skill 目录使用 Python 3.10 或更高版本安装依赖：
 
 ```powershell
 python -m pip install -r requirements.txt

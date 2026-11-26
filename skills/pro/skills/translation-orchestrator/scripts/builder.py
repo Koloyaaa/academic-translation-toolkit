@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-格式构建器：将大模型输出的 Markdown 译文转换为 HTML / DOCX / Markdown。
+格式构建器：将大模型输出的 Markdown 译文转换为 HTML / DOCX / Markdown / PPTX。
 质量门禁：输入非空检查，并要求每种请求格式都生成非空成品。会尝试全部格式，任何一种失败都会返回明确错误。
 """
 import sys
@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Dict, List
 
 # 各格式构建器统一从 builders 包导入
-from builders import build_html, build_docx, build_markdown
+from builders import build_html, build_docx, build_markdown, build_pptx
 
 
 _PDF_LAYOUT_MARKER_RE = re.compile(
@@ -66,6 +66,7 @@ def build_all(
         ),
         "docx": build_docx,
         "md": build_markdown,
+        "pptx": partial(build_pptx, asset_root=output_dir),
     }
 
     for fmt in requested_formats:
@@ -108,7 +109,7 @@ def build_all(
 
 
 def main(argv=None) -> int:
-    parser = argparse.ArgumentParser(description="将 Markdown 译文转换为多种文档格式")
+    parser = argparse.ArgumentParser(description="将 Markdown 译文转换为 HTML、DOCX、Markdown 或 PPTX")
     parser.add_argument("--input", type=str, required=True, help="输入的 Markdown 文件路径")
     parser.add_argument("--output_dir", type=str, default="./output/docs", help="输出目录")
     parser.add_argument("--formats", type=str, required=True, help="逗号分隔的请求格式列表")

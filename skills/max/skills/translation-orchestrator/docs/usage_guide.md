@@ -1,6 +1,6 @@
 # 使用指南
 
-本技能将 PDF、DOCX、PPTX 或 TXT 格式的外文学案整理为中文学习材料，并可导出 HTML、DOCX 或 Markdown。当前模型支持图像输入且宿主能把页图像素交给模型时，PDF/PPTX 必须逐页视觉核对，OCR 只是辅助；当前模型明确不支持图像输入或宿主没有实际传图通道时标为 `SKIPPED_NO_VISION`，继续处理提取文本并在成品列出未审核页。图片密集页只有经视觉核对后才会调用共享讲解阶段。HTML 公式由 MathJax CDN 在线渲染，打开 HTML 时需要联网；离线时公式可能显示为 LaTeX 源码。
+本技能将 PDF、DOCX、PPTX、TXT 或对话中直接粘贴的纯文本整理为中文学习材料，并可导出 HTML、DOCX、Markdown 或 PPTX（仅 Pro/Max）。当前模型支持图像输入且宿主能把页图像素交给模型时，PDF/PPTX 必须逐页视觉核对，OCR 只是辅助；当前模型明确不支持图像输入或宿主没有实际传图通道时标为 `SKIPPED_NO_VISION`，继续处理提取文本并在成品列出未审核页。图片密集页只有经视觉核对后才会调用共享讲解阶段。HTML 公式由 MathJax CDN 在线渲染，打开 HTML 时需要联网；离线时公式可能显示为 LaTeX 源码。
 
 每个实际执行的 Skill 都必须在开始前单独输出 `当前使用 Skill：<skill-name>`；编排器切换阶段时也必须先报出目标 Skill 名称。未输出声明不得开始该阶段。只声明实际执行的模块，不会把缓存跳过的模块说成正在使用；这行提示不会写进讲义。
 
@@ -8,7 +8,7 @@
 
 ## 快速开始
 
-1. 按[套件安装说明](../README.md)把十一个同级 Skills 一起安装到支持 Agent Skills 标准的 Harness，并启用 translation-orchestrator 编排入口。PPTX 渲染需要 LibreOffice；PDF 由 pypdfium2 渲染。Aider 和 Continue 目前需要手动加载或改写规则，详见[兼容说明](../README.md#兼容边界)。
+1. 按[套件安装说明](../README.md)把十三个同级 Skills 一起安装到支持 Agent Skills 标准的 Harness，并启用 translation-orchestrator 编排入口。读取和视觉核对 PPTX 需要 LibreOffice；PPTX 输出使用已安装依赖，不需要 LibreOffice；PDF 由 pypdfium2 渲染。Aider 和 Continue 目前需要手动加载或改写规则，详见[兼容说明](../README.md#兼容边界)。
 2. 首次使用前，在安装后的 translation-orchestrator 目录打开终端并安装共享依赖：
 
    ```powershell
@@ -16,7 +16,7 @@
    ```
 
 3. 在对话中选择编排入口并附上学案。
-4. 说明学科、输出格式、展示布局、概念表、中文注释等级、是否提取 PDF 配图，以及术语策略。
+4. 说明学科、输出格式、展示布局、概念表、中文注释等级、是否提取 PDF 配图、是否补全明确挖空，以及术语策略。
 5. 在当前项目的 `output/<学案名>/` 中查看成品。编排器只调用本轮选中的模块；正文、测验与各输出格式分别记录缓存，切换输出格式时复用已审计译稿，不重跑正文翻译或全文审计。缓存保留统一 Markdown、无正文覆盖索引和同源识别上下文，不保留原始提取文本；双语 Markdown 可能包含原文片段。删除缓存目录可强制重新处理。
 
 本轮明确指定的值优先。未指定学科或源语言时，技能从当前讲义正文推断，每份讲义重新识别；其他无法从讲义推断的缺少选项仍逐项询问，每条消息只问一个问题。
@@ -34,8 +34,9 @@
 | `source_text` | 若宿主支持则由预处理注入 | 否则从用户附加的源文件读取；Agent Skills 标准本身不定义参数注入 |
 | `discipline` | `Engineering`、`Economics`、`Science`、`Agriculture`、`Social_Sciences`、`Literature_Arts`、`Medicine` | 从当前讲义推断，用于术语语境判断；无法可靠判断时询问 |
 | `source_language` | 当前讲义正文的主要语言 | 自动识别；用于“学案所属语言”测验选项 |
-| `output_formats` | `html`、`docx`、`md` | 可多选，至少选择一种 |
+| `output_formats` | `html`、`docx`、`md`、`pptx`（仅 Pro/Max） | 可多选，至少选择一种 |
 | `layout` | `translation_only`、`translation_first`、`source_first`、`concept_highlight` | 仅译文、译文在前、原文在前或术语标注原文 |
+| `smart_handout_completion` | `true` / `false` | 是否补全明确挖空；数学证明会检索整份讲义里的相关知识点并检查定理条件，证据不足时保留空格并标记“待老师确认”；首次询问后保存为可复用偏好 |
 | `show_concept_table` | `true` / `false` | 是否在文末生成重要术语概念汇总表 |
 | `annotate_level` | `无注释`、`轻度注释`、`高中生视角`、`重度注释` | 注释越多，译文越长 |
 | `include_images` | `true` / `false` | 插入 PDF/PPTX Reader 经过视觉核对并选中的图片；若宿主无图像输入，则不导出图片并在成品说明 |
@@ -91,7 +92,7 @@ PDF 提取文本中的每页页码和块坐标用于图片落位；即使某页�
 
 ### DOCX 或 HTML 未生成
 
-确认已在技能目录安装 `requirements.txt` 中的依赖，并检查最终回复列出的失败格式。质量审计会对照源文检查正文覆盖、语义忠实、无依据增补、数字和公式；HTML、DOCX、Markdown 的结构与呈现由各自发布阶段检查。无法确认的页段须如实说明；此检查不等于学科专家审稿。
+确认已在技能目录安装 `requirements.txt` 中的依赖，并检查最终回复列出的失败格式。质量审计会对照源文检查正文覆盖、语义忠实、无依据增补、数字和公式；HTML、DOCX、Markdown、PPTX 的结构与呈现由各自发布阶段检查。无法确认的页段须如实说明；此检查不等于学科专家审稿。
 
 ### 配图没有提取
 

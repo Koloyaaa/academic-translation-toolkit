@@ -4,7 +4,7 @@
 
 将英语、法语等外文学案整理为准确、易读的中文学习材料，保留章节、术语、公式、表格和练习结构，并导出用户选择的格式。
 
-本项目包含十一个同级、可独立发现的 Agent Skills。`translation-orchestrator` 是编排入口，同时集中保存共享脚本、Wikidata 在线术语查询工具、模板和大部分依赖；十个执行 Skill 按需完成短线/长线翻译、PDF/PPTX 读取、共享图示讲解、测验、解析、格式发布和质量审计。各平台的安装目录、加载入口和工具权限不同。
+本项目包含十三个同级、可独立发现的 Agent Skills。`translation-orchestrator` 是编排入口，同时集中保存共享脚本、Wikidata 在线术语查询工具、模板和大部分依赖；十二个执行 Skill 按需完成短线/长线翻译、PDF/PPTX 读取、共享图示讲解、测验、解析、学案补全、格式发布和质量审计。各平台的安装目录、加载入口和工具权限不同。
 
 ## 强制 Skill 使用声明
 
@@ -14,8 +14,9 @@
 
 ## 支持范围
 
-- 输入：PDF、DOCX、PPTX、TXT。PDF/PPTX 页面逐页渲染；当前模型支持图像输入且宿主能把页图像素交给它时必须逐页视觉核对，OCR 仅作辅助。能力以当前会话的宿主/模型组合为准，不根据模型品牌/型号、文件路径、OCR 或文字描述推断。若当前模型明确不支持图像输入或宿主没有实际传图通道，Reader 记录 `SKIPPED_NO_VISION`，只继续处理可提取文本，并在成品列出未审核页。
-- 输出：HTML、DOCX、Markdown。
+- 输入：PDF、DOCX、PPTX、TXT，或对话中直接粘贴的纯文本。PDF/PPTX 页面逐页渲染；当前模型支持图像输入且宿主能把页图像素交给它时必须逐页视觉核对，OCR 仅作辅助。能力以当前会话的宿主/模型组合为准，不根据模型品牌/型号、文件路径、OCR 或文字描述推断。若当前模型明确不支持图像输入或宿主没有实际传图通道，Reader 记录 `SKIPPED_NO_VISION`，只继续处理可提取文本，并在成品列出未审核页。
+- 输出：HTML、DOCX、Markdown、PPTX。PPTX 仅由 Pro/Max 提供，以可编辑幻灯片输出；无需为输出安装额外依赖。
+- 学案挖空补全：用户可选启用；只补明确留空。数理证明会检索全篇关联知识点并核对条件，依据不足时保留空格并标记“待老师确认”，完成后逐空独立审计。
 - 配图：PDF/PPTX 的图片由 Reader 逐页核对后选择导出；PDF 图片从页渲染图裁切。译稿标注页码，信息密集页按需生成图示说明。`SKIPPED_NO_VISION` 时不导出图片或图示说明。
 - 术语：默认通过 Wikidata 公开 API 查询多语种标签作为候选，也可由模型结合上下文确定译名。结构化数据采用 CC0 1.0。查询只发送单个术语或短语，不发送整份讲义；候选并非学科规范词典。用户选择 `ai_auto` 时不调用外部 API。
 
@@ -34,17 +35,17 @@
 | Cline | `.cline/skills/` | [Cline](https://docs.cline.bot/customization/skills) |
 | Roo Code | `.roo/skills/` 或 `.agents/skills/` | [Roo Code](https://roocodeinc.github.io/Roo-Code/features/skills/) |
 
-将 `skills/` 下的十一个文件夹直接复制到对应的 Skills 根目录，确保它们保持同级，且安装后能分别找到各目录中的 `SKILL.md`。不能只安装编排入口：PDF/PPTX Reader 各自带解析脚本，其他 Skills 需要从同级的 translation-orchestrator 目录读取共享资源。通用 Harness 从标准 `SKILL.md` 读取技能；`skill.yaml` 是可选扩展。
+将 `skills/` 下的十三个文件夹直接复制到对应的 Skills 根目录，确保它们保持同级，且安装后能分别找到各目录中的 `SKILL.md`。不能只安装编排入口：PDF/PPTX Reader 各自带解析脚本，其他 Skills 需要从同级的 translation-orchestrator 目录读取共享资源。通用 Harness 从标准 `SKILL.md` 读取技能；`skill.yaml` 是可选扩展。
 
 也可以装到用户目录供所有项目使用，例如 Trae 的 `%USERPROFILE%\.trae-cn\skills\`。
 
-若使用 ZIP 导入，请逐个导入十一个技能目录，并确认它们安装到同一 Skills 根目录。在 translation-orchestrator 目录打开终端后安装共享依赖：
+若使用 ZIP 导入，请逐个导入十三个技能目录，并确认它们安装到同一 Skills 根目录。在 translation-orchestrator 目录打开终端后安装共享依赖：
 
 ```powershell
 python -m pip install -r requirements.txt
 ```
 
-PPTX 页面渲染还需要在系统中安装 LibreOffice；PDF 由 pypdfium2 直接渲染。Tesseract 仅用于辅助 OCR，不能替代视觉核对。
+读取并视觉核对来源 PPTX 需要系统安装 LibreOffice；PDF 由 pypdfium2 直接渲染。生成 PPTX 成品使用已打包的 `python-pptx`，无需安装 LibreOffice。Tesseract 仅用于辅助 OCR，不能替代视觉核对。
 
 脚本要求 Python 3.10 或更高版本。
 
@@ -56,7 +57,7 @@ PPTX 页面渲染还需要在系统中安装 LibreOffice；PDF 由 pypdfium2 直
 | --- | --- |
 | 学科 | `Engineering`、`Economics`、`Science`、`Agriculture`、`Social_Sciences`、`Literature_Arts`、`Medicine` | 根据当前讲义推断，无法可靠判断时再询问 |
 | 源语言 | 当前讲义正文的主要语言 | 自动识别；无法可靠判断时再询问 |
-| 输出格式 | `html`、`docx`、`md`，至少选择一种 |
+| 输出格式 | `html`、`docx`、`md`、`pptx`，至少选择一种 |
 | 展示布局 | `translation_only`、`translation_first`、`source_first`、`concept_highlight` |
 | 概念表 | `true`（生成）或 `false`（不生成） |
 | 中文注释 | `无注释`、`轻度注释`、`高中生视角`、`重度注释` |
@@ -81,9 +82,9 @@ PPTX 页面渲染还需要在系统中安装 LibreOffice；PDF 由 pypdfium2 直
 - `SKILL.md`：编排入口，收集设置并按需路由子 Skill。
 - `references/task-handoff.md`：编排器与子 Skill 共用的任务清单和产物交接契约。
 - `skill.yaml`：编排入口的可选参数扩展；它不是 Agent Skills 标准字段，只有明确支持该扩展的调用器才会读取。
-- `scripts/`：文本提取、Wikidata 术语查询、图片提取和 HTML / DOCX / Markdown 构建器。
+- `scripts/`：文本提取、Wikidata 术语查询、图片提取和 HTML / DOCX / Markdown / PPTX 构建器。
 - `templates/`：HTML 样式。
-- 同级其他十个 Skill 目录：各自的 SKILL.md 和专属工作规则；见[套件索引](../README.md)。
+- 同级其他十二个 Skill 目录：各自的 SKILL.md 和专属工作规则；见[套件索引](../README.md)。
 - `docs/usage_guide.md`：参数说明、使用流程和故障排查。
 
 ## 兼容边界

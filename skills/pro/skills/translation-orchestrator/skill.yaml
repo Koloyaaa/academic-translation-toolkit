@@ -23,7 +23,7 @@ parameters:
     type: array
     description: "输出格式（必须至少选择一项）"
     required: true
-    enum: ["html", "docx", "md"]
+    enum: ["html", "docx", "md", "pptx"]
 
   # ✅ 修正：4 个互斥选项，包含 concept_highlight
   - name: layout
@@ -31,6 +31,12 @@ parameters:
     description: "展示布局（四选一，必须明确选择）"
     required: true
     enum: ["translation_only", "translation_first", "source_first", "concept_highlight"]
+
+  - name: smart_handout_completion
+    type: string
+    description: "智能补全明确挖空；未指定且历史偏好没有此项时在翻译前询问，任务内明确值优先"
+    required: false
+    enum: ["true", "false"]
 
   - name: show_concept_table
     type: string

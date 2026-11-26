@@ -4,7 +4,7 @@
 
 [中文](README.md) | [English](README.en.md)
 
-本项目将英语、法语等外文讲义整理成中文学案，支持术语标注、公式、表格、注释和章末测验。你可以根据材料和检查需求，选择 Lite、Plus、Pro 或 Max 档位，安装对应的 Agent Skills。
+本项目将英语、法语等外文讲义整理成中文学案，支持术语标注、公式、表格、注释和章末测验；Pro 和 Max 另可导出可编辑 PPTX。你可以根据材料和检查需求，选择 Lite、Plus、Pro 或 Max 档位，安装对应的 Agent Skills。
 
 项目已收录于 [VoltAgent](https://github.com/VoltAgent) 的 [awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills)、[heilcheng](https://github.com/heilcheng) 的 [awesome-agent-skills](https://github.com/heilcheng/awesome-agent-skills)、[StudentSuite](https://github.com/StudentSuite) 的 [awesome-skills-plugins-for-students](https://github.com/StudentSuite/awesome-skills-plugins-for-students)，以及 [yzfly](https://github.com/yzfly) 的 [awesome-skills-zh](https://github.com/yzfly/awesome-skills-zh)。
 
@@ -28,9 +28,9 @@
 轻度注释，术语用 Wikidata 在线查询；暂时不需要章末测验。
 ```
 
-不想从零写？[Prompt 库](prompts/README.md) 里有预习、双语对照、考前复习等现成模板，复制后填好方括号即可。
+不想从零写？[Prompt 库](prompts/README.md) 里有预习、双语对照、考前复习和学案挖空补全等现成模板，复制后填好方括号即可。
 
-成品在项目的 `output/<学案名>/` 里：HTML 是带目录、公式和阅读进度的阅读器，DOCX 方便打印或批注。想换布局、注释强度或加测验，直接改这段文字；完整参数见[使用指南](skills/max/skills/translation-orchestrator/docs/usage_guide.md)。
+成品在项目的 `output/<学案名>/` 里：HTML 是带目录、公式和阅读进度的阅读器，DOCX 方便打印或批注，Pro/Max 还可生成可编辑 PPTX。想换布局、注释强度或加测验，直接改这段文字；完整参数见[使用指南](skills/max/skills/translation-orchestrator/docs/usage_guide.md)。
 
 ## 效果预览
 
@@ -49,11 +49,26 @@
 | 档位 | 适用场景 | 工作方式 | V4.0.4 下载 |
 | --- | --- | --- | --- |
 | [Lite](skills/lite/README.md) | 短小、结构简单的材料 | 使用旧版单体翻译流程，检查成品是否存在、非空且可读取。 | [Lite](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-lite.zip) |
-| [Plus](skills/plus/README.md) | 需要独立审计的普通讲义 | 使用旧版翻译流程，由独立质量审计 Skill 核对原文、译文和所选成品。无法完成审计时，不能报告审计通过。 | [Plus](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-plus.zip) |
-| [Pro](skills/pro/README.md) | 材料和输出需求各不相同的任务 | 包含完整新版技能组；每个 Skill 完成后，编排器根据结果和依赖决定下一步。 | [Pro](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-pro.zip) |
-| [Max](skills/max/README.md) | 希望使用现有完整新版流程的任务 | 包含完整新版技能组，按既有规则执行适用阶段。 | [Max](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-max.zip) |
+| [Plus](skills/plus/README.md) | 需要独立审计的普通讲义 | 使用旧版翻译流程；可选启用明确挖空补全，并由独立质量审计 Skill 分别核对基础译稿、补全依据和成品。 | [Plus](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-plus.zip) |
+| [Pro](skills/pro/README.md) | 材料和输出需求各不相同的任务 | 包含完整新版技能组；可选补全学案挖空，每个 Skill 完成后由编排器根据结果和依赖决定下一步。 | [Pro](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-pro.zip) |
+| [Max](skills/max/README.md) | 希望使用现有完整新版流程的任务 | 包含完整新版技能组，支持按需补全学案挖空，并按既有规则执行适用阶段。 | [Max](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-max.zip) |
 
 [下载四档全家桶](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-all.zip) · [查看 V4.0.4 发布说明](https://github.com/Koloyaaa/academic-translation-toolkit/releases/tag/v4.0.4)
+
+> 功能状态说明：Pro/Max 在 V4.0.4 中已支持读取来源 PPTX；本页提到的可编辑 PPTX 输出和学案补全尚未进入正式安装包。V4.0.4 下载包不含这两项新增功能；要使用它们，请从本仓库当前源码安装相应档位。正式安装包更新后会同步调整此说明。
+
+## 四档功能对比
+
+| 功能 | Lite | Plus | Pro | Max |
+| --- | --- | --- | --- | --- |
+| **输入材料** | PDF、DOCX、TXT、纯文本；扫描版 PDF 需先 OCR | 同 Lite | PDF、PPTX、DOCX、TXT、纯文本；PDF/PPTX 走专用读取流程 | 同 Pro |
+| **输出格式** | HTML、DOCX、Markdown | HTML、DOCX、Markdown | HTML、DOCX、Markdown、可编辑 PPTX | 同 Pro |
+| **学案挖空补全** | 不提供 | 可选；只补明确留空，依据不足时保留空格并标“待老师确认” | 同 Plus；证明题会结合全篇知识点核对条件和推理 | 同 Pro |
+| **内容审计** | 检查成品文件存在、非空且可读；不做独立语义审计 | 独立审计源文、译文和所选成品；启用补全时另核对每个空格 | 正文必审；用户选择测验或补全时分别独立审计；各格式另做结构检查 | 同 Pro |
+| **视觉材料检查** | 沿用旧版 PDF 配图能力，不保证逐页视觉审计 | 沿用旧版读取方式；审计报告注明实际查看到的视觉范围 | PDF/PPTX 有逐页 Reader；当前模型与宿主能传递页图时逐页核对 | 同 Pro |
+| **工作流** | 单体翻译流程，轻量文件检查 | 单体翻译流程，加独立审计上下文 | 13 个模块化 Skills；每个 Skill 后重新判断下一阶段，并记录阶段决策 | 13 个模块化 Skills；按完整编排流程执行适用阶段 |
+
+Pro 和 Max 的输入、输出、补全与审计能力相同，主要区别在于编排流程：Pro 在每个 Skill 后都重新评估阶段依赖并记录决策；Max 使用现有的完整工作流。Plus 的补全需要宿主提供独立审阅上下文。更多细节见各档说明和[使用指南](skills/max/skills/translation-orchestrator/docs/usage_guide.md)。
 
 通常情况下，档位越高，可能运行的环节和检查越多，处理时间也可能更长。请按材料复杂度和检查需求下载、使用所需档位；不需要把四档全部安装。
 
@@ -61,7 +76,7 @@ Lite 和 Plus 基于 V3.1.3 单体流程，支持 PDF、DOCX、TXT 和纯文本�
 
 ## 安装
 
-本项目需要支持 Agent Skills 的 AI 工具、Python 3.10 或更高版本，以及 AI 工具调用本地文件和 Python 的能力。Pro、Max 处理 PPTX 时需要 LibreOffice 渲染幻灯片；PDF 使用 PDFium。HTML 公式使用 MathJax CDN，离线时可能显示 LaTeX 源码。
+本项目需要支持 Agent Skills 的 AI 工具、Python 3.10 或更高版本，以及 AI 工具调用本地文件和 Python 的能力。Pro、Max 读取并视觉核对来源 PPTX 时需要 LibreOffice 渲染幻灯片；生成 PPTX 成品使用 Pro/Max 套件中已打包的 `python-pptx`，无需 LibreOffice。Pro/Max 的 PDF Reader 使用 `pypdfium2` 逐页渲染；Lite/Plus 旧版流程使用 `pypdf`、`pdfplumber` 提取 PDF 文本，扫描版 PDF 需先 OCR。HTML 公式使用 MathJax CDN，离线时可能显示 LaTeX 源码。
 
 ### 复制所选档位
 
@@ -73,9 +88,9 @@ Lite 和 Plus 基于 V3.1.3 单体流程，支持 PDF、DOCX、TXT 和纯文本�
 | 档位 | 要复制的目录 | 入口 Skill |
 | --- | --- | --- |
 | Lite | `skills/lite/skills/` 下的一个 Skill 目录 | `foreign-academic-translator-lite` |
-| Plus | `skills/plus/skills/` 下的两个 Skill 目录 | `foreign-academic-translator-plus` |
-| Pro | `skills/pro/skills/` 下的十一个 Skill 目录 | `translation-orchestrator` |
-| Max | `skills/max/skills/` 下的十一个 Skill 目录 | `translation-orchestrator` |
+| Plus | `skills/plus/skills/` 下的三个 Skill 目录 | `foreign-academic-translator-plus` |
+| Pro | `skills/pro/skills/` 下的十三个 Skill 目录 | `translation-orchestrator` |
+| Max | `skills/max/skills/` 下的十三个 Skill 目录 | `translation-orchestrator` |
 
 常见 AI 工具的项目级 Skills 根目录如下。各 AI 工具的发现方式可能不同，请以其官方文档为准。
 
@@ -127,7 +142,8 @@ Pro 和 Max 支持 PDF、PPTX、DOCX、TXT 和纯文本。处理 PDF/PPTX 时，
 
 ## 输出与数据
 
-- 支持 HTML、DOCX 和 Markdown，以及仅译文、中外文对照和术语标注布局。
+- Pro 和 Max 支持 HTML、DOCX、Markdown、PPTX，以及仅译文、中外文对照和术语标注布局；PPTX 输出按可编辑幻灯片生成，Lite 和 Plus 不提供 PPTX 输出。
+- Plus、Pro、Max 可选启用学案挖空补全；只处理明确留空。数学证明会结合整份讲义中已提及的关联知识点核对条件和推理；依据不足时保留空格并标“待老师确认”，补全结果还要经过独立审计。
 - 本轮明确指定的参数优先；学科和源语言根据当前讲义识别，不沿用其他讲义的结果。
 - 可生成概念表、分级中文注释及基础、中档、高难测验。
 - 章节标题按所选布局呈现中外文；课程元信息放在页眉。长学案按段处理，并在当前回合内完成译文与成品构建。
