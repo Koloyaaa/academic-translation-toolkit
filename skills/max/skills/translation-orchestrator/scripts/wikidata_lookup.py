@@ -26,15 +26,16 @@ from urllib.request import Request, urlopen
 
 API_ENDPOINT = "https://www.wikidata.org/w/api.php"
 USER_AGENT = (
-    "AcademicTranslationSkills/4.0.3 "
+    "AcademicTranslationSkills/4.0.4 "
     "(https://github.com/Koloyaaa/academic-translation-toolkit/issues)"
 )
 MAX_TERMS = 10
 MAX_RESULTS = 5
 MAX_RESPONSE_BYTES = 2_000_000
+RESPONSE_CHUNK_BYTES = 64_000
 TRANSIENT_HTTP_CODES = {429, 500, 502, 503, 504}
 MAX_RETRIES = 2
-MAX_TOTAL_RETRY_WAIT_SECONDS = 20.0
+MAX_LOOKUP_DURATION_SECONDS = 20.0
 REQUEST_INTERVAL_SECONDS = 1.0
 CACHE_SUCCESS_TTL_SECONDS = 30 * 24 * 60 * 60
 CACHE_NOT_FOUND_TTL_SECONDS = 6 * 60 * 60
@@ -67,32 +68,85 @@ def _retry_delay(headers, attempt: int) -> float:
     return 5.0 * (2**attempt) + random.uniform(0.0, 0.5)
 
 
-def _wait_before_retry(headers, attempt: int, waited_seconds: float, failure_message: str) -> float:
-    delay = _retry_delay(headers, attempt)
-    if waited_seconds + delay > MAX_TOTAL_RETRY_WAIT_SECONDS:
+def _lookup_time_remaining(deadline: float) -> float:
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
         raise LookupError(
-            f"{failure_message} Retry-After/backoff exceeds the "
-            f"{MAX_TOTAL_RETRY_WAIT_SECONDS:.0f}-second interactive wait budget; "
+            f"Wikidata lookup exceeded its {MAX_LOOKUP_DURATION_SECONDS:.0f}-second total time budget."
+        )
+    return remaining
+
+
+def _wait_before_retry(headers, attempt: int, deadline: float, failure_message: str) -> None:
+    delay = _retry_delay(headers, attempt)
+    remaining = _lookup_time_remaining(deadline)
+    if delay >= remaining:
+        raise LookupError(
+            f"{failure_message} Retry-After/backoff exceeds the remaining time in the "
+            f"{MAX_LOOKUP_DURATION_SECONDS:.0f}-second total lookup budget; "
             "the request was stopped without an early retry."
         )
     time.sleep(delay)
-    return waited_seconds + delay
+    _lookup_time_remaining(deadline)
 
 
-def _pace_request() -> None:
+def _pace_request(deadline: float) -> None:
     global _LAST_REQUEST_STARTED
     now = time.monotonic()
+    _lookup_time_remaining(deadline)
     remaining = REQUEST_INTERVAL_SECONDS - (now - _LAST_REQUEST_STARTED)
     if _LAST_REQUEST_STARTED and remaining > 0:
+        if remaining >= _lookup_time_remaining(deadline):
+            raise LookupError(
+                f"Wikidata request pacing exceeds the remaining time in the "
+                f"{MAX_LOOKUP_DURATION_SECONDS:.0f}-second total lookup budget."
+            )
         time.sleep(remaining)
+    _lookup_time_remaining(deadline)
     _LAST_REQUEST_STARTED = time.monotonic()
 
 
-def _request_json(params: dict[str, str], timeout: float) -> dict:
+def _response_socket(response):
+    # urllib wraps the HTTP response around a buffered stream and socket.
+    current = response
+    for _ in range(3):
+        fp = getattr(current, "fp", None)
+        if fp is None:
+            return None
+        sock = getattr(getattr(fp, "raw", None), "_sock", None)
+        if sock is not None and callable(getattr(sock, "settimeout", None)):
+            return sock
+        current = fp
+    return None
+
+
+def _read_response(response, deadline: float) -> bytes:
+    reader = getattr(response, "read1", None)
+    if not callable(reader):
+        reader = getattr(getattr(response, "fp", None), "read1", None)
+    if not callable(reader):
+        reader = response.read
+
+    payload = bytearray()
+    while len(payload) <= MAX_RESPONSE_BYTES:
+        remaining = _lookup_time_remaining(deadline)
+        sock = _response_socket(response)
+        if sock is not None:
+            # Refresh the socket timeout so slow, chunked responses share the same deadline.
+            sock.settimeout(remaining)
+        chunk = reader(min(RESPONSE_CHUNK_BYTES, MAX_RESPONSE_BYTES + 1 - len(payload)))
+        if not chunk:
+            break
+        payload.extend(chunk)
+    _lookup_time_remaining(deadline)
+    return bytes(payload)
+
+
+def _request_json(params: dict[str, str], timeout: float, deadline: float) -> dict:
     url = f"{API_ENDPOINT}?{urlencode(params)}"
-    waited_seconds = 0.0
     for attempt in range(MAX_RETRIES + 1):
-        _pace_request()
+        _pace_request(deadline)
+        request_timeout = min(timeout, _lookup_time_remaining(deadline))
         request = Request(
             url,
             headers={
@@ -102,9 +156,9 @@ def _request_json(params: dict[str, str], timeout: float) -> dict:
             },
         )
         try:
-            with urlopen(request, timeout=timeout) as response:
+            with urlopen(request, timeout=request_timeout) as response:
                 response_headers = response.headers
-                payload = response.read(MAX_RESPONSE_BYTES + 1)
+                payload = _read_response(response, deadline)
                 content_encoding = response.headers.get("Content-Encoding", "").lower()
             try:
                 if content_encoding == "gzip":
@@ -115,7 +169,9 @@ def _request_json(params: dict[str, str], timeout: float) -> dict:
                 raise LookupError("Wikidata returned invalid compressed data.") from error
             if len(payload) > MAX_RESPONSE_BYTES:
                 raise LookupError("Wikidata returned an unexpectedly large response.")
+            _lookup_time_remaining(deadline)
             result = json.loads(payload.decode("utf-8"))
+            _lookup_time_remaining(deadline)
             if not isinstance(result, dict):
                 raise LookupError("Wikidata returned an invalid JSON response.")
             if "error" in result:
@@ -123,27 +179,21 @@ def _request_json(params: dict[str, str], timeout: float) -> dict:
                 error_code = str(error.get("code", "unknown"))
                 failure_message = f"Wikidata API error: {error_code}."
                 if error_code in {"maxlag", "ratelimited"} and attempt < MAX_RETRIES:
-                    waited_seconds = _wait_before_retry(
-                        response_headers, attempt, waited_seconds, failure_message
-                    )
+                    _wait_before_retry(response_headers, attempt, deadline, failure_message)
                     continue
                 raise LookupError(failure_message)
             return result
         except HTTPError as error:
             failure_message = f"Wikidata returned HTTP {error.code}."
             if error.code in TRANSIENT_HTTP_CODES and attempt < MAX_RETRIES:
-                waited_seconds = _wait_before_retry(
-                    error.headers, attempt, waited_seconds, failure_message
-                )
+                _wait_before_retry(error.headers, attempt, deadline, failure_message)
                 continue
             raise LookupError(failure_message) from error
         except (URLError, TimeoutError, OSError) as error:
             if attempt < MAX_RETRIES:
                 reason = getattr(error, "reason", None)
                 detail = type(reason).__name__ if reason is not None else type(error).__name__
-                waited_seconds = _wait_before_retry(
-                    {}, attempt, waited_seconds, f"Could not reach Wikidata ({detail})."
-                )
+                _wait_before_retry({}, attempt, deadline, f"Could not reach Wikidata ({detail}).")
                 continue
             reason = getattr(error, "reason", None)
             detail = type(reason).__name__ if reason is not None else type(error).__name__
@@ -264,7 +314,9 @@ def _target_languages(language: str) -> list[str]:
     return [normalized]
 
 
-def _search_term(term: str, source_language: str, limit: int, timeout: float) -> dict:
+def _search_term(
+    term: str, source_language: str, limit: int, timeout: float, deadline: float
+) -> dict:
     try:
         payload = _request_json(
             {
@@ -279,6 +331,7 @@ def _search_term(term: str, source_language: str, limit: int, timeout: float) ->
                 "maxlag": "5",
             },
             timeout,
+            deadline,
         )
     except LookupError as error:
         return {"term": term, "status": "UNAVAILABLE", "message": str(error), "candidates": []}
@@ -305,7 +358,9 @@ def _search_term(term: str, source_language: str, limit: int, timeout: float) ->
     }
 
 
-def _attach_target_labels(results: list[dict], target_language: str, timeout: float) -> None:
+def _attach_target_labels(
+    results: list[dict], target_language: str, timeout: float, deadline: float
+) -> None:
     ids = list(
         dict.fromkeys(
             candidate["id"]
@@ -328,6 +383,7 @@ def _attach_target_labels(results: list[dict], target_language: str, timeout: fl
                 "maxlag": "5",
             },
             timeout,
+            deadline,
         )
     except LookupError as error:
         for result in results:
@@ -374,6 +430,7 @@ def lookup(
     timeout: float,
     cache_enabled: bool = True,
 ) -> dict:
+    deadline = time.monotonic() + MAX_LOOKUP_DURATION_SECONDS
     unique_terms = []
     seen = set()
     for term in terms:
@@ -399,7 +456,7 @@ def lookup(
                 fresh_entries.append((index, term, key))
 
         for fresh_index, (index, term, key) in enumerate(fresh_entries):
-            result = _search_term(term, source_language, limit, timeout)
+            result = _search_term(term, source_language, limit, timeout, deadline)
             results_by_index[index] = result
             fresh_results.append(result)
 
@@ -427,7 +484,7 @@ def lookup(
         else:
             label_results = [result for result in fresh_results if result.get("candidates")]
             if label_results:
-                _attach_target_labels(label_results, target_language, timeout)
+                _attach_target_labels(label_results, target_language, timeout, deadline)
 
         if cache_connection is not None:
             for (index, term, key), result in zip(fresh_entries, fresh_results):
