@@ -1,6 +1,6 @@
 # 更新记录
 
-## 未发布
+## V4.1.0（2026-11-27）
 
 - Plus、Pro、Max 新增可选的学案智能补全 Skill。只处理明确挖空；结合整份讲义中的关联知识点核对数理证明，依据不足时保留空格并标记“待老师确认”。三档均加入独立补全审计，Pro/Max 增加条件式阶段、缓存签名和发布依赖，补全说明可见于 HTML、DOCX、Markdown 与 PPTX 成品。
 - Pro 和 Max 新增可编辑 PPTX 输出与 foreign-academic-pptx-publisher Skill；新构建器将已审计的统一 Markdown 分页生成 16:9 幻灯片，并接入格式选择、发布门禁和各档独立缓存。Lite 和 Plus 保持现有输出范围。

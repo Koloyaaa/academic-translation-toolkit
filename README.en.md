@@ -1,6 +1,6 @@
 # Academic Translation Skills
 
-**Version: V4.0.4** · [中文](README.md) | English
+**Version: V4.1.0** · [中文](README.md) | English
 
 This project turns English, French, and other foreign-language course materials into Chinese study notes. It preserves course structure, terminology, formulas, examples, and exercises, and can produce HTML, DOCX, or Markdown. Pro and Max can also produce editable PPTX decks. The [Chinese README](README.md) is authoritative if the two versions differ.
 
@@ -10,7 +10,7 @@ The project appears in [VoltAgent's awesome-agent-skills](https://github.com/Vol
 
 **Step 1: install Lite (about 3 minutes)**
 
-1. Download the [Lite package](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-lite.zip), unzip it, and locate `lite/skills/foreign-academic-translator-lite`.
+1. Download the [Lite package](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.1.0/academic-translation-skills-v4.1.0-lite.zip), unzip it, and locate `lite/skills/foreign-academic-translator-lite`.
 2. Copy that folder into the Skills directory of the AI tool you use, for example `.claude/skills/` in Claude Code or `.agents/skills/` in Codex.
 3. In that folder, run `python -m pip install -r requirements.txt`, then reload Skills.
 
@@ -55,9 +55,7 @@ Lite and Plus use the V3.1.3 monolithic workflow. Pro and Max each contain their
 
 Higher tiers may run more stages and checks, so processing can take longer. Download and use the tier that fits the material and review needs; you do not need to install all four.
 
-Download V4.0.4: [Lite](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-lite.zip) · [Plus](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-plus.zip) · [Pro](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-pro.zip) · [Max](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-max.zip) · [All tiers](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-all.zip).
-
-> Feature status: Pro and Max can read source PPTX files in V4.0.4. Editable PPTX output and handout completion described on this page have not shipped in an official package yet; the V4.0.4 downloads do not include either feature. To use them, install the relevant tier from the current repository source. This note will change when the packages are updated.
+Download V4.1.0: [Lite](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.1.0/academic-translation-skills-v4.1.0-lite.zip) · [Plus](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.1.0/academic-translation-skills-v4.1.0-plus.zip) · [Pro](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.1.0/academic-translation-skills-v4.1.0-pro.zip) · [Max](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.1.0/academic-translation-skills-v4.1.0-max.zip) · [All tiers](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.1.0/academic-translation-skills-v4.1.0-all.zip).
 
 ## Feature comparison
 
@@ -144,7 +142,7 @@ Code, Skill instructions, and documentation that the project author is entitled 
 
 The four tier packages no longer include CSV terminology tables. Wikidata lookup is the default: only selected individual terms or short phrases are sent, never the handout. Results include multilingual candidates with links to their Wikidata items and must be checked against context. If no suitable match or Chinese label is available, or the service cannot be reached, the workflow falls back to contextual translation and reports the limitation. Choose `ai_auto` for terms that should not be sent to an external service.
 
-The project's release history is available on [GitHub Releases](https://github.com/Koloyaaa/academic-translation-toolkit/releases) and in the [changelog](CHANGELOG.md). V4.0.4 is the version described in this README; consult Releases for published packages.
+The project's release history is available on [GitHub Releases](https://github.com/Koloyaaa/academic-translation-toolkit/releases) and in the [changelog](CHANGELOG.md). V4.1.0 is the version described in this README; consult Releases for published packages.
 
 ## Star History
 

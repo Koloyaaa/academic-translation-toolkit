@@ -1,6 +1,6 @@
 # Academic Translation Skills：外文讲义翻译
 
-**版本：V4.0.4**
+**版本：V4.1.0**
 
 [中文](README.md) | [English](README.en.md)
 
@@ -12,7 +12,7 @@
 
 **第一步：安装 Lite（约 3 分钟）**
 
-1. 下载 [Lite 包](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-lite.zip)，解压后找到 `lite/skills/foreign-academic-translator-lite`。
+1. 下载 [Lite 包](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.1.0/academic-translation-skills-v4.1.0-lite.zip)，解压后找到 `lite/skills/foreign-academic-translator-lite`。
 2. 把这个文件夹整个复制到你所用 AI 工具的 Skills 目录，例如 Claude Code 的 `.claude/skills/`、Codex 的 `.agents/skills/`。
 3. 进入该文件夹执行 `python -m pip install -r requirements.txt`，然后重新载入 Skills。
 
@@ -46,16 +46,14 @@
 
 四档各有独立的目录和入口。先选择一档，再安装该档所需的全部 Skill。
 
-| 档位 | 适用场景 | 工作方式 | V4.0.4 下载 |
+| 档位 | 适用场景 | 工作方式 | V4.1.0 下载 |
 | --- | --- | --- | --- |
-| [Lite](skills/lite/README.md) | 短小、结构简单的材料 | 使用旧版单体翻译流程，检查成品是否存在、非空且可读取。 | [Lite](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-lite.zip) |
-| [Plus](skills/plus/README.md) | 需要独立审计的普通讲义 | 使用旧版翻译流程；可选启用明确挖空补全，并由独立质量审计 Skill 分别核对基础译稿、补全依据和成品。 | [Plus](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-plus.zip) |
-| [Pro](skills/pro/README.md) | 材料和输出需求各不相同的任务 | 包含完整新版技能组；可选补全学案挖空，每个 Skill 完成后由编排器根据结果和依赖决定下一步。 | [Pro](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-pro.zip) |
-| [Max](skills/max/README.md) | 希望使用现有完整新版流程的任务 | 包含完整新版技能组，支持按需补全学案挖空，并按既有规则执行适用阶段。 | [Max](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-max.zip) |
+| [Lite](skills/lite/README.md) | 短小、结构简单的材料 | 使用旧版单体翻译流程，检查成品是否存在、非空且可读取。 | [Lite](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.1.0/academic-translation-skills-v4.1.0-lite.zip) |
+| [Plus](skills/plus/README.md) | 需要独立审计的普通讲义 | 使用旧版翻译流程；可选启用明确挖空补全，并由独立质量审计 Skill 分别核对基础译稿、补全依据和成品。 | [Plus](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.1.0/academic-translation-skills-v4.1.0-plus.zip) |
+| [Pro](skills/pro/README.md) | 材料和输出需求各不相同的任务 | 包含完整新版技能组；可选补全学案挖空，每个 Skill 完成后由编排器根据结果和依赖决定下一步。 | [Pro](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.1.0/academic-translation-skills-v4.1.0-pro.zip) |
+| [Max](skills/max/README.md) | 希望使用现有完整新版流程的任务 | 包含完整新版技能组，支持按需补全学案挖空，并按既有规则执行适用阶段。 | [Max](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.1.0/academic-translation-skills-v4.1.0-max.zip) |
 
-[下载四档全家桶](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-all.zip) · [查看 V4.0.4 发布说明](https://github.com/Koloyaaa/academic-translation-toolkit/releases/tag/v4.0.4)
-
-> 功能状态说明：Pro/Max 在 V4.0.4 中已支持读取来源 PPTX；本页提到的可编辑 PPTX 输出和学案补全尚未进入正式安装包。V4.0.4 下载包不含这两项新增功能；要使用它们，请从本仓库当前源码安装相应档位。正式安装包更新后会同步调整此说明。
+[下载四档全家桶](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.1.0/academic-translation-skills-v4.1.0-all.zip) · [查看 V4.1.0 发布说明](https://github.com/Koloyaaa/academic-translation-toolkit/releases/tag/v4.1.0)
 
 ## 四档功能对比
 
@@ -184,7 +182,7 @@ Pro 和 Max 支持 PDF、PPTX、DOCX、TXT 和纯文本。处理 PDF/PPTX 时，
 
 ## 版本发布
 
-[V4.0.4 下载与发布说明](https://github.com/Koloyaaa/academic-translation-toolkit/releases/tag/v4.0.4)；详细历史见 [CHANGELOG](CHANGELOG.md)。
+[V4.1.0 下载与发布说明](https://github.com/Koloyaaa/academic-translation-toolkit/releases/tag/v4.1.0)；详细历史见 [CHANGELOG](CHANGELOG.md)。
 
 ## Star History
 

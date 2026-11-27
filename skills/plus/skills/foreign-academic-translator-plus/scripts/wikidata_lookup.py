@@ -26,7 +26,7 @@ from urllib.request import Request, urlopen
 
 API_ENDPOINT = "https://www.wikidata.org/w/api.php"
 USER_AGENT = (
-    "AcademicTranslationSkills/4.0.4 "
+    "AcademicTranslationSkills/4.1.0 "
     "(https://github.com/Koloyaaa/academic-translation-toolkit/issues)"
 )
 MAX_TERMS = 10
