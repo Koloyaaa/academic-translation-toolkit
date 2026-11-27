@@ -2,13 +2,13 @@
 
 from pathlib import Path
 
-from .base import annotate_first_occurrences
+from .base import annotate_first_occurrences, strip_handout_completion_markers
 
 
 def build_markdown(md_content: str, output_path: Path) -> Path:
     """将 Markdown 内容加上水印注释后写盘（术语首次出现自动补原文括号）。"""
     marker = "<!-- WATERMARK -->"
-    content = marker + "\n\n" + annotate_first_occurrences(md_content) + "\n\n" + marker
+    content = marker + "\n\n" + annotate_first_occurrences(strip_handout_completion_markers(md_content)) + "\n\n" + marker
 
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)

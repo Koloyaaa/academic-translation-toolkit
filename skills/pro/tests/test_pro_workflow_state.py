@@ -182,6 +182,58 @@ class ProWorkflowStateTests(unittest.TestCase):
         unavailable_task = {**pdf_task, "vision_capability": "unavailable"}
         workflow_state.validate_gate(unavailable_task, "review_pdf", "SKIPPED_NO_VISION")
 
+    def test_optional_completion_waits_for_selected_quiz_audit_and_gates_publishers(self):
+        self.task["smart_handout_completion"] = True
+        self.task["quiz_levels"] = ["basic"]
+        required = workflow_state.required_stages(self.task)
+        self.assertIn("complete_handout", required)
+        self.assertIn("audit_completion", required)
+        self.assertLess(required.index("complete_handout"), required.index("publish_md"))
+        self.assertLess(required.index("publish_md"), required.index("audit_completion"))
+        self.assertEqual(
+            workflow_state.stage_dependencies("complete_handout", self.task),
+            ["audit_translation", "audit_quiz"],
+        )
+        self.assertEqual(
+            workflow_state.stage_dependencies("publish_md", self.task),
+            ["audit_translation", "audit_quiz", "complete_handout"],
+        )
+        self.assertEqual(
+            workflow_state.stage_dependencies("audit_completion", self.task),
+            ["complete_handout", "publish_md"],
+        )
+
+        self.task["smart_handout_completion"] = False
+        self.assertNotIn("complete_handout", workflow_state.required_stages(self.task))
+        self.assertNotIn("audit_completion", workflow_state.required_stages(self.task))
+        self.assertNotIn("complete_handout", workflow_state.stage_dependencies("publish_md", self.task))
+
+    def test_completion_audit_signature_tracks_completer_skill_rules(self):
+        self.task.update({"smart_handout_completion": True, "layout": "translation_only"})
+        before = workflow_state.stage_context(
+            workflow_state.read_state(self.state_path), "audit_completion", self.task,
+            workflow_state.parse_keys(""), [self.source],
+        )[0]
+        completer = PRO_ROOT / "skills" / "foreign-academic-handout-completer" / "SKILL.md"
+        original = completer.read_text(encoding="utf-8")
+        try:
+            completer.write_text(original + "\n# cache signature fixture\n", encoding="utf-8")
+            after = workflow_state.stage_context(
+                workflow_state.read_state(self.state_path), "audit_completion", self.task,
+                workflow_state.parse_keys(""), [self.source],
+            )[0]
+        finally:
+            completer.write_text(original, encoding="utf-8")
+        self.assertNotEqual(before, after)
+
+    def test_completion_cache_paths_must_stay_inside_the_pro_cache_directory(self):
+        bad_task = {
+            **self.task,
+            "cache_completed_markdown": str((self.output / "completed.md").resolve()),
+        }
+        with self.assertRaisesRegex(ValueError, "cache_completed_markdown must stay inside"):
+            workflow_state.validate_pro_metadata(bad_task)
+
     def test_check_reads_only_pro_cache_and_requires_valid_gate(self):
         cached_core = self.cache / "core.md"
         self.mark("translate", cached_core, cache=True)

@@ -2,7 +2,7 @@
 
 **Version: V4.0.4** · [中文](README.md) | English
 
-This project turns English, French, and other foreign-language course materials into Chinese study notes. It preserves course structure, terminology, formulas, examples, and exercises, and can produce HTML, DOCX, or Markdown. The [Chinese README](README.md) is authoritative if the two versions differ.
+This project turns English, French, and other foreign-language course materials into Chinese study notes. It preserves course structure, terminology, formulas, examples, and exercises, and can produce HTML, DOCX, or Markdown. Pro and Max can also produce editable PPTX decks. The [Chinese README](README.md) is authoritative if the two versions differ.
 
 The project appears in [VoltAgent's awesome-agent-skills](https://github.com/VoltAgent/awesome-agent-skills), [heilcheng's awesome-agent-skills](https://github.com/heilcheng/awesome-agent-skills), [StudentSuite's awesome-skills-plugins-for-students](https://github.com/StudentSuite/awesome-skills-plugins-for-students), and [yzfly's awesome-skills-zh](https://github.com/yzfly/awesome-skills-zh).
 
@@ -26,9 +26,9 @@ Output HTML and DOCX. Chinese body only; keep the source term at first use and a
 Use light annotations and look up terminology on Wikidata; no end-of-chapter quiz for now.
 ```
 
-The [prompt library](prompts/README.md) has ready-made templates for preview, bilingual, and exam-review workflows (in Chinese); copy one and fill in the brackets.
+The [prompt library](prompts/README.md) has ready-made templates for preview, bilingual, exam-review, and explicit-blank completion workflows (in Chinese); copy one and fill in the brackets.
 
-Deliverables land in `output/<lecture-name>/`: the HTML file opens as a reader with an outline, formulas, and reading progress; the DOCX is ready to print or annotate. To change the layout, annotation depth, or add a quiz, edit the message; see the [usage guide](skills/max/skills/translation-orchestrator/docs/usage_guide.md) for every option.
+Deliverables land in `output/<lecture-name>/`: the HTML file opens as a reader with an outline, formulas, and reading progress; the DOCX is ready to print or annotate; Pro and Max can also create editable PowerPoint decks. To change the layout, annotation depth, or add a quiz, edit the message; see the [usage guide](skills/max/skills/translation-orchestrator/docs/usage_guide.md) for every option.
 
 ## Preview
 
@@ -47,15 +47,30 @@ Each tier is a separate package. Install the one that fits your task; the packag
 | Tier | Best suited to | Entry Skill | Checks |
 | --- | --- | --- | --- |
 | [Lite](skills/lite/README.md) | Short, simple material | `foreign-academic-translator-lite` | Legacy translation with basic file readability checks. |
-| [Plus](skills/plus/README.md) | Legacy workflow with a separate audit Skill | `foreign-academic-translator-plus` | The separate quality-auditor Skill compares the source and translation and checks the selected outputs. If it cannot run in an independent review context, the task is blocked rather than reported as passed. |
-| [Pro](skills/pro/README.md) | Tasks that benefit from selecting stages as work progresses | `translation-orchestrator` | The full modular Skill group; the orchestrator records a decision after each Skill finishes and enforces stage dependencies and audits. |
-| [Max](skills/max/README.md) | The established full workflow | `translation-orchestrator` | The full modular Skill group, following the existing workflow and its audits and publishing checks. |
+| [Plus](skills/plus/README.md) | Legacy workflow with a separate audit Skill | `foreign-academic-translator-plus` | Optional explicit-blank completion; the separate auditor reviews the base translation, completion evidence, and final outputs in the required scopes. |
+| [Pro](skills/pro/README.md) | Tasks that benefit from selecting stages as work progresses | `translation-orchestrator` | The full modular Skill group, with optional handout completion; the orchestrator records a decision after each Skill and enforces stage dependencies and audits. |
+| [Max](skills/max/README.md) | The established full workflow | `translation-orchestrator` | The full modular Skill group supports optional handout completion and follows the established workflow, audits, and publishing checks. |
 
-Lite and Plus use the V3.1.3 monolithic workflow. Pro and Max each contain their own copy of the newer eleven-Skill group.
+Lite and Plus use the V3.1.3 monolithic workflow. Pro and Max each contain their own copy of the newer thirteen-Skill group.
 
 Higher tiers may run more stages and checks, so processing can take longer. Download and use the tier that fits the material and review needs; you do not need to install all four.
 
 Download V4.0.4: [Lite](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-lite.zip) · [Plus](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-plus.zip) · [Pro](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-pro.zip) · [Max](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-max.zip) · [All tiers](https://github.com/Koloyaaa/academic-translation-toolkit/releases/download/v4.0.4/academic-translation-skills-v4.0.4-all.zip).
+
+> Feature status: Pro and Max can read source PPTX files in V4.0.4. Editable PPTX output and handout completion described on this page have not shipped in an official package yet; the V4.0.4 downloads do not include either feature. To use them, install the relevant tier from the current repository source. This note will change when the packages are updated.
+
+## Feature comparison
+
+| Feature | Lite | Plus | Pro | Max |
+| --- | --- | --- | --- | --- |
+| **Source materials** | PDF, DOCX, TXT, and plain text; scanned PDFs need OCR first | Same as Lite | PDF, PPTX, DOCX, TXT, and plain text; dedicated PDF/PPTX readers | Same as Pro |
+| **Output formats** | HTML, DOCX, Markdown | HTML, DOCX, Markdown | HTML, DOCX, Markdown, editable PPTX | Same as Pro |
+| **Handout completion** | Not available | Optional; fills only explicit blanks and leaves unsupported items marked “Teacher confirmation needed” | Same as Plus; proofs use related material across the handout to check assumptions and reasoning | Same as Pro |
+| **Content audit** | Checks that deliverables exist, are non-empty, and readable; no independent semantic audit | Independent audit of source, translation, and selected deliverables; completion adds a separate blank-by-blank review | Translation is always audited; quiz and completion are audited when selected, plus format checks | Same as Pro |
+| **Visual review** | Legacy PDF image handling; no guaranteed page-by-page visual audit | Legacy readers; the auditor reports which visual content it actually reviewed | Dedicated PDF/PPTX readers; page-by-page review when the model and host can pass rendered page images | Same as Pro |
+| **Workflow** | Monolithic translation with lightweight file checks | Monolithic translation plus a separate audit context | Thirteen modular Skills; re-decides and records the next stage after each Skill | Thirteen modular Skills; follows the established full orchestration workflow |
+
+Pro and Max share source formats, output formats, completion, and audit capabilities. Their main difference is orchestration: Pro re-evaluates dependencies and records a decision after every Skill; Max follows the established full workflow. Plus completion requires a host that can provide an independent review context. See each tier's README and the [usage guide](skills/max/skills/translation-orchestrator/docs/usage_guide.md) for details.
 
 ## Install the tier you need
 
@@ -65,9 +80,9 @@ Download V4.0.4: [Lite](https://github.com/Koloyaaa/academic-translation-toolkit
    | Tier | Directories to install |
    | --- | --- |
    | Lite | `skills/lite/skills/foreign-academic-translator-lite/` |
-   | Plus | Both directories under `skills/plus/skills/` |
-   | Pro | All eleven directories under `skills/pro/skills/` |
-   | Max | All eleven directories under `skills/max/skills/` |
+   | Plus | All three directories under `skills/plus/skills/` |
+   | Pro | All thirteen directories under `skills/pro/skills/` |
+   | Max | All thirteen directories under `skills/max/skills/` |
 
 3. Install the selected tier's Python dependencies. Python 3.10 or newer is required. For Lite or Plus, use the `requirements.txt` inside the translator Skill; for Pro or Max, use the one inside that tier's `translation-orchestrator` directory. For example, before copying the Pro directories:
 
@@ -98,9 +113,10 @@ Before running a Skill, the host must announce its name in the conversation in t
 - Chapter headings follow the selected layout, with course metadata in a compact header. Long handouts are handled in segments within the current turn.
 - Settings specified in the current request take priority. The discipline and source language are inferred from the current handout rather than reused from another one.
 - The HTML reader provides a file tree, lesson outline, reading progress, appearance settings, highlights, and personal notes. Reader settings and notes are stored in the browser. HTML formulas use MathJax from a CDN and require a network connection.
-- Pro and Max cache approved stages separately; their cache directories are `.translator-cache-pro/` and `.translator-cache-max/`. Cached bilingual Markdown can contain source-language passages.
+- Pro and Max support HTML, DOCX, Markdown, and editable PPTX output; Lite and Plus do not produce PPTX. Their approved stages are cached separately in `.translator-cache-pro/` and `.translator-cache-max/`. Cached bilingual Markdown can contain source-language passages.
+- Plus, Pro, and Max can optionally complete explicit blanks in a handout. Proofs use related knowledge already mentioned elsewhere in the handout to check assumptions and reasoning. Unsupported answers remain blank and are marked for teacher confirmation; a separate audit checks the completion.
 
-PPTX rendering in Pro and Max requires LibreOffice. Tesseract is optional for OCR and cannot replace the required visual review when image input is available. Consult the selected tier's guide for installation and limitations.
+Reading and visually reviewing source PPTX files in Pro and Max requires LibreOffice for rendering. PPTX output uses the `python-pptx` package bundled with the Pro/Max suites and does not require LibreOffice. Tesseract is optional for OCR and cannot replace the required visual review when image input is available. Consult the selected tier's guide for installation and limitations.
 
 ## Project documents
 

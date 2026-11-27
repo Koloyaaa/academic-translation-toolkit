@@ -32,6 +32,12 @@ parameters:
     required: true
     enum: ["translation_only", "translation_first", "source_first", "concept_highlight"]
 
+  - name: smart_handout_completion
+    type: string
+    description: "未指定且历史偏好中没有此项时，在翻译前询问是否补全学案中的明确挖空；本轮明确设置优先"
+    required: true
+    enum: ["true", "false"]
+
   - name: show_concept_table
     type: string
     description: "是否生成概念表（必须明确选择 true 或 false）"

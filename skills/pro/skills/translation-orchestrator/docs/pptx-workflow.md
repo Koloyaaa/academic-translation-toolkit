@@ -17,7 +17,7 @@ PDF 页面中的图像引用可能表示软遮罩、背景或超出页面边界�
 3. `vision_capability=available` 时，Reader 必须将文本结构与每张可见页图逐项比对，记录 OCR 修正、图表关系、公式/图片内容和不确定项。`finalize` 必须确认所有可见页都具有渲染图，且每页所有对象 ID 均被检查；缺页或不确定时输出 `PARTIAL` / `FAIL`，禁止继续生成。只有 `vision_capability=unavailable` 时才不做视觉审查，finalize 写出 `SKIPPED_NO_VISION`，继续文本路线；未经确认的 OCR 不得进入译稿。
 4. 仅当宿主视觉能力可用且 Reader 的最终清单标记有信息密集图示候选页时，调用 `foreign-academic-visual-explainer`。它按页解释已核对图中的关系，产出简洁、带对象锚点的学习说明；普通装饰图和纯文字页不走该阶段。
 5. `foreign-academic-lesson-translator` 读取最终页码化 `source_text_file`、manifest，以及按需的图示说明，按原页顺序翻译。每一页的内容标注“来源：PPT第 X 页”；跨页主题也要在新的页段标明页码。若 `SKIPPED_NO_VISION`，只翻译已提取文本/表格，不猜视觉内容，在译稿末尾列出未审核页并说明可能遗漏；此时不导出图片。
-6. 测验仍使用原有出题与解析 Skills；题目锚点引用 PPT 页码和对象 ID。质量审计在视觉能力可用时逐页核对页图、manifest 与译稿；`SKIPPED_NO_VISION` 时审计全部已提取文字，标记视觉内容未审核，并确认译稿的处理限制说明。之后再运行用户选择的 HTML/DOCX/Markdown 发布流程。
+6. 测验仍使用原有出题与解析 Skills；题目锚点引用 PPT 页码和对象 ID。质量审计在视觉能力可用时逐页核对页图、manifest 与译稿；`SKIPPED_NO_VISION` 时审计全部已提取文字，标记视觉内容未审核，并确认译稿的处理限制说明。之后再运行用户选择的 HTML/DOCX/Markdown/PPTX 发布流程。
 
 ## 清单和缓存
 

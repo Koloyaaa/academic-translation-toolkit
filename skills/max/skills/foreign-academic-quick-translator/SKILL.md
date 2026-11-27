@@ -40,5 +40,5 @@ metadata:
 
 - 将全文写入清单指定的 `translated_core_markdown`，并写 `coverage_index_file`。以 `DOCX_BLOCK:<序号>` 或 `TXT_BLOCK:<序号>` 等稳定锚点对应源文单元；索引只保存锚点、译稿位置和覆盖状态，不复制源文或译文。
 - 源文的每个正文单元都必须在译稿和覆盖索引中有去向。不要把完整源文/译文复制到聊天内容或另一 Skill 的提示中。
-- 不构建 HTML、DOCX 或 Markdown 成品，不调用 Publisher，不执行质量审计，也不声称已交付或已通过门禁。正文必须由 `foreign-academic-quality-auditor` 完整审计；修复后复审受影响部分；语义审计通过后才进入所选格式发布阶段。
+- 不构建 HTML、DOCX、Markdown 或 PPTX 成品，不调用 Publisher，不执行质量审计，也不声称已交付或已通过门禁。正文必须由 `foreign-academic-quality-auditor` 完整审计；修复后复审受影响部分；语义审计通过后才进入所选格式发布阶段。
 - 如果无法完整读取、翻译或建立覆盖记录，返回 `NEEDS_FULL_ROUTE` 和原因，不生成看似完整的部分结果。

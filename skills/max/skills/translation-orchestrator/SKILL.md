@@ -24,7 +24,7 @@ metadata:
 - `translation_route=quick` 时，DOCX/TXT 调用共享 `scripts/text_extractor.py` 一次，再调用 `foreign-academic-quick-translator`；不加载完整正文翻译 Skill。路线为 `full` 时，PDF 内容阶段缓存未命中则调用 `foreign-academic-pdf-reader`，完成结构提取、全页渲染、按当前宿主能力进行逐页视觉核对或明确记录跳过，并通过相应门禁；不得以 OCR 代替看图。PPTX 同理调用专用 Reader；完整路线的 DOCX/TXT 使用共享提取器。
 - PDF/PPTX 必须先判定当前宿主与模型的组合能否看图：只有当前模型明确支持图像输入，且宿主能把渲染页像素作为图像内容交给它，才记为 `available`；当前模型明确不支持图像输入，或宿主没有实际传图通道，才记为 `unavailable`。优先依据当前会话的模态说明；说明缺失时，通过真实通道传入一张渲染页确认模型是否收到图像内容。模型品牌/型号、文件路径、OCR 或文字描述本身都不能证明有看图能力。能力不确定时不能标成 `unavailable`，先核实当前会话；通道可用但某页加载失败属于审核失败，不能借此跳过。
 - PDF/PPTX 的 `vision_capability=available` 时，Reader 必须逐页查看每张渲染图并核对所有对象。页图不可用、对象漏核或视觉结论不确定时保留 `PARTIAL`/`FAIL`，不能降级成跳过。仅当 `vision_capability=unavailable` 时跳过视觉核对：不给 Reader 伪造视觉 JSON，完成结构提取与页码交接，生成 `gate=SKIPPED_NO_VISION`，继续基于提取文本翻译和共同质量审计。该状态不是视觉通过；最终译稿必须含“处理限制”，列出未审核页/幻灯片及视觉内容可能遗漏。能力不可用时不调用视觉讲解 Skill；有能力时只在 Reader 标记候选页后调用。
-- 正文翻译只在其缓存未命中时调用；测验 Skills 仅在用户选择测验且测验缓存未命中时调用；只加载所选且未缓存的 HTML/DOCX 发布 Skill；Markdown 使用共享构建器。
+- 正文翻译只在其缓存未命中时调用；测验 Skills 仅在用户选择测验且测验缓存未命中时调用；只加载所选且未缓存的 HTML/DOCX/PPTX 发布 Skill；Markdown 使用共享构建器。
 - 若测验出题与解析都要执行，可在共享内容上下文中依次完成，避免跨调用复制整份讲义。否则分阶段读取文件，只保留路径、页码锚点、哈希、状态和缺陷编号。
 - 子 Skills 从同一 `.translation-task.json` 读取参数，不重复提问、不读取/修改偏好。宿主不能按名称调用 Skill 时，只读取同级目录中当前阶段所需的 `SKILL.md` 及其相关参考文档。
 
@@ -48,9 +48,12 @@ metadata:
 | PDF/PPTX 图示学习说明 | `foreign-academic-visual-explainer` | 对应 Reader 发现信息密集图示候选页 |
 | 题目草稿 | `foreign-academic-quiz-generator` | 选择测验且测验缓存未命中 |
 | 答案核验与解析 | `foreign-academic-solution-explainer` | 选择测验且测验缓存未命中 |
+| 学案智能补全 | `foreign-academic-handout-completer` | `smart_handout_completion=true` 且补全缓存未命中 |
 | HTML / DOCX 发布 | 对应 publisher Skill | 用户选择格式且格式缓存未命中 |
+| PPTX 发布 | `foreign-academic-pptx-publisher` | 用户选择 PPTX 且格式缓存未命中 |
 | Markdown 发布 | 本套件共享构建器 | 用户选择 Markdown 且格式缓存未命中 |
 | 正文/测验语义门禁 | `foreign-academic-quality-auditor` | 对应审计缓存未命中 |
+| 补全独立审计 | `foreign-academic-quality-auditor` 的 `audit_completion` 范围 | 启用补全且补全审计缓存未命中 |
 | 格式专项检查 | 对应 publisher Skill | 成品新建或格式缓存未命中 |
 
 ## 需求与偏好
@@ -60,9 +63,16 @@ metadata:
 - 用户本轮明确设置优先。学科和主要源语言每份材料重新识别，不写入偏好。
 - 偏好文件存在且用户没有说明是否沿用时，只询问是否沿用。用户同意后，偏好仅补充本轮未指定且不能从材料推断的选项；用户拒绝则忽略。
 - 偏好文件不存在时不询问历史偏好。只询问确实影响产物、且无法从本轮内容、材料或已接受偏好推断的必要选项；不要重复确认已确定值。无测验时不询问测验语言。
+- `smart_handout_completion` 是可复用的 `true/false` 偏好；本轮明示优先。没有本轮值或已接受偏好值时，在翻译前单独询问是否补全明确挖空，并把选择与其他可复用设置一并保存。关闭时完全跳过补全阶段。
 - 全文交付是默认目标。长材料按页或章节连续完成，不因篇幅提前结束。遇到真实阻塞时准确说明页码和未完成项。
 
-可复用选项包括：输出格式 `html/docx/md`；布局 `translation_only`、`translation_first`、`source_first`、`concept_highlight`；概念表开关；注释等级；源文件配图开关；术语策略 `wikidata` 或 `ai_auto`。术语策略未指定时默认 `wikidata`；用户选择 `ai_auto` 时不访问外部服务。共享查询脚本默认使用用户级本地缓存：有目标语言标签的成功候选保留 30 天，无匹配或缺少目标语言标签的候选保留 6 小时，`UNAVAILABLE` 不缓存；用户明确要求强制重新查询时传 `--no-cache`。限流或服务不可用后停止发送本批剩余术语，继续上下文翻译并说明未核验项。历史偏好中的 `system_glossary` 映射为 `wikidata`。收齐参数后只将这些可复用值和更新时间写回偏好，不保存学科、源语言、源文或提取文本。
+可复用选项包括：输出格式 `html/docx/md/pptx`；其中 PPTX 仅 Pro/Max 提供；布局 `translation_only`、`translation_first`、`source_first`、`concept_highlight`；概念表开关；注释等级；源文件配图开关；术语策略 `wikidata` 或 `ai_auto`。术语策略未指定时默认 `wikidata`；用户选择 `ai_auto` 时不访问外部服务。共享查询脚本默认使用用户级本地缓存：有目标语言标签的成功候选保留 30 天，无匹配或缺少目标语言标签的候选保留 6 小时，`UNAVAILABLE` 不缓存；用户明确要求强制重新查询时传 `--no-cache`。限流或服务不可用后停止发送本批剩余术语，继续上下文翻译并说明未核验项。历史偏好中的 `system_glossary` 映射为 `wikidata`。收齐参数后只将这些可复用值和更新时间写回偏好，不保存学科、源语言、源文或提取文本。
+
+## 智能补全阶段
+
+仅当任务清单 `smart_handout_completion=true` 时加入 `complete_handout` 和 `audit_completion`。正文先通过 `audit_translation`（若选择测验也先完成 `audit_quiz`），再由 `foreign-academic-handout-completer` 读取完整源文、用户参考资料和已审计基础译稿，产出 `completed_markdown` 与 `completion_ledger_file`。由 `completed_markdown` 组装发布稿并生成所有所选格式；之后由质量审计 Skill 独立核验每个空格和全部最终成品。有据答案通过，证据不足但空格保留并标“待老师确认”的条目也可通过。任何无依据答案、循环证明或遗漏空格都必须修复，重建受影响成品并复审。补全阶段签名纳入开关、版式、学科/源语言、基础译稿、用户参考文件和 completer/auditor 规则指纹；切换开关不得触发正文重译。
+
+启用补全时，`audit_completion` 必须等所有所选格式都生成并通过格式检查后再运行。检查持久 `audit_completion` 缓存时，输入包括原件/提取文本、已审计基础译稿、用户参考资料、补全稿、ledger 和全部已选成品；只有阶段签名及输出哈希均匹配时才复用。缓存命中后不调用审计 Skill，并把该缓存结果写入本轮 state。未命中时调用独立审计；只有审计 `PASS` 后才复制补全稿和 ledger 到补全缓存，并在持久 state 中记录 `audit_completion`。审计失败、部分或受阻时不得写入持久补全缓存。
 
 ## 任务清单与执行
 
@@ -70,17 +80,18 @@ metadata:
 
 按以下顺序执行：
 
-1. 检查持久 `translate`、`quiz`、`audit_translation`、`audit_quiz` 和所选格式缓存；本轮 state 还检查 PDF 的 `parse_pdf`、`review_pdf`、`explain_pdf` 及 PPTX 的 `parse_pptx`、`review_pptx`、`explain_pptx`。`translate` 检查键必须包含 `translation_route`，阶段指纹只纳入所选翻译 Skill 及真正影响该阶段的参数/资源；测验与发布格式设置不进入正文翻译签名。`resolved_config` 只补齐本轮未指定值，不覆盖用户明示设置。
+1. 按依赖顺序检查持久 `translate`、`quiz`、`audit_translation`、`audit_quiz` 和所选格式缓存；启用补全时，在所选格式生成后检查 `audit_completion` 缓存。本轮 state 还检查 PDF 的 `parse_pdf`、`review_pdf`、`explain_pdf` 及 PPTX 的 `parse_pptx`、`review_pptx`、`explain_pptx`。`translate` 检查键必须包含 `translation_route`，阶段指纹只纳入所选翻译 Skill 及真正影响该阶段的参数/资源；测验与发布格式设置不进入正文翻译签名。`resolved_config` 只补齐本轮未指定值，不覆盖用户明示设置。
 2. 内容或审计阶段缓存未命中时准备源文。`quick` 只能处理符合快速路径范围的 DOCX/TXT 或纯文本，由共享提取器准备一次；若预检发现视觉、扫描、复杂结构、篇幅过长或完整性不确定，改设 `translation_route=full`。PDF/PPTX 分别运行对应 Reader 的结构提取。若 `vision_capability=available`，必须查看每页渲染图并完成对象覆盖核对；图像识别是主路径，OCR 仅作可选辅助。若 `vision_capability=unavailable`，不生成视觉核对记录，finalize 必须写明 `gate=SKIPPED_NO_VISION`、未审核页码和能力证据；允许继续翻译可提取文本，但译稿须在末尾含“处理限制”说明，不能声称视觉覆盖完整，也不能猜写未读图像。`PARTIAL`/`FAIL`，或 `available` 却没有逐页核对记录时，保留问题并停止生成。仅当视觉能力可用且有候选页时加载共享视觉讲解 Skill。完整路线的 DOCX/TXT 调用共享 `text_extractor.py`。
 3. 正文缓存未命中时按 `translation_route` 调用一个翻译 Skill；两条路线都必须输出 `translated_core_markdown` 和简洁 coverage index，随后都进入同一个 `foreign-academic-quality-auditor` 正文审计。PDF 按物理页序标注“来源：PDF第 X 页”；PPTX 按幻灯片顺序标注“来源：PPT第 X 页”；跨页主题需在新页段重标来源。图示说明分别标为“图示解读（PDF第 X 页）”或“图示解读（PPT第 X 页）”，作为辅助内容而非原文。`include_images=true` 时只能引用 Reader 经视觉核对批准导出的正式图片；为 false 时不得把临时渲染图放进译稿。
 4. 选择测验且缓存未命中时，先根据源文页码/标题/对象锚点起草题目，再核对唯一答案并写解析。没有测验时不加载出题与解析 Skills。按需组装正文和测验 Markdown。
 5. 正文和测验语义审计分别查缓存，且在发布之前完成。PDF/PPTX 宿主视觉能力可用时，正文审计逐页核对文字、表格、视觉记录、图示说明、来源页码和译文覆盖；若 manifest 为 `SKIPPED_NO_VISION`，审计所有已提取文字和结构，但把视觉内容列为“未审核”，确认译稿没有编造，并检查“处理限制”准确列出页码。此时正文审计通过只表示可提取内容忠实，不代表视觉内容完整。测验审计只按题目锚点核对已提取源文支持、唯一答案和解析；不能考查未审核视觉内容。两条翻译路线都使用相同的审计 Skill 和通过标准。
 6. 对缺陷只修复受影响锚点和必要邻段；修复正文或测验后复审对应范围。存在未解决 P0/P1/P2 时不得进入发布。
-7. 语义审计通过后，对每个未命中的已选格式单独调用 `shared_runtime/scripts/builder.py`，每次只传一种格式。从同一份统一 Markdown 构建；所有格式构建器都必须拦截可见乱码、替换字符、异常控制字符和泄漏的 HTML 源码片段，HTML/DOCX 发布 Skill 再做相应格式检查。门禁失败时按报告定位修复统一 Markdown 或编码后重建；若修改影响正文语义，重跑受影响的审计范围。必须确认本次退出码为 0、返回路径正确且文件非空；目录中的旧同名成品不算本次成功。
+7. 正文和测验语义审计通过后按需运行 `complete_handout`，再对每个未命中的已选格式单独调用 `shared_runtime/scripts/builder.py`，每次只传一种格式。从同一份统一 Markdown 构建；所有格式构建器都必须拦截可见乱码、替换字符、异常控制字符和泄漏的 HTML 源码片段，HTML/DOCX/PPTX 发布 Skill 再做相应格式检查。门禁失败时按报告定位修复统一 Markdown 或编码后重建；若修改影响正文语义，重跑受影响的审计范围。必须确认本次退出码为 0、返回路径正确且文件非空；目录中的旧同名成品不算本次成功。
+8. 补全启用时，所有格式构建完成后调用 `foreign-academic-quality-auditor` 的 `audit_completion` 范围。审计者必须实际打开源件/提取文本、基础译稿、补全稿、ledger、用户参考资料及每个最终成品，核对逐空依据、证明条件和成品覆盖。只有该审计通过后才清理并交付；未通过则修复补全或格式、重建受影响成品并复审。
 
 PDF/PPTX 的结构清单、原文文本、页图和视觉核对记录可能包含课程材料，只保留在本轮工作区，不写入持久缓存。视觉核对及按需图示说明完成后，运行对应 Reader 的 `pdf_extractor.py fingerprint` 或 `pptx_extractor.py fingerprint`，将摘要写入 `pdf_processing_fingerprint` 或 `pptx_processing_fingerprint`。持久正文/测验/审计签名只保存该摘要、原件哈希、设置和执行规则指纹；不依赖临时原文文件存在。PDF/PPTX 正式图片仅在用户启用 `include_images` 且逐页核对明确选择后留在正式输出目录，并且必须按 Reader 批准的原文件原样引用；不得生成或编辑替代图，后续排版只允许保持比例的整体缩放。遵守 Reader 输出契约中的图片保真规则，任何图示说明放在图片外。
 
-所有阶段用 `workflow_state.py check/start/mark` 记录输入、设置、成品哈希与耗时。PDF/PPTX 解析、视觉核对和按需图示讲解只写本轮 state，不写入持久 cache state。用量不可得时留空，不估算；缓存输入是 input token 的子集，不重复加到总量。只有对应门禁成功后才将译稿、测验或格式成品指纹写入 `.translator-cache-max/`。多 Agent 并行仅用于互不依赖的内容块或所选格式；所有 Agent 共享一次解析结果，并由编排器串行推进有依赖的阶段。
+所有阶段用 `workflow_state.py check/start/mark` 记录输入、设置、成品哈希与耗时。PDF/PPTX 解析、视觉核对和按需图示讲解只写本轮 state，不写入持久 cache state。补全缓存仅在 `audit_completion=PASS` 后登记到 `.translator-cache-max/workflow-state.json`；本轮成功时保留 `cache_completed_markdown` 与 `cache_completion_ledger_file`，以便下一轮按阶段签名复用。用量不可得时留空，不估算；缓存输入是 input token 的子集，不重复加到总量。只有对应门禁成功后才将译稿、测验或格式成品指纹写入 `.translator-cache-max/`。多 Agent 并行仅用于互不依赖的内容块或所选格式；所有 Agent 共享一次解析结果，并由编排器串行推进有依赖的阶段。
 
 ## 清理与交付
 

@@ -13,18 +13,22 @@
 - `translation_route_reason`：简短记录选择路线的材料特征，不写源文内容。
 - `source_text_file`：本轮需执行正文/测验/语义审计时使用的页码化文本；PDF/PPTX 指向 Reader 完成视觉核对或明确跳过后生成的最终文本。`SKIPPED_NO_VISION` 时该文本仅包含已提取内容，未审核范围另在 manifest 和译稿限制说明中记录。
 - `translated_core_markdown`：不含章末测验的统一译稿工作路径。
+- `smart_handout_completion`：本轮最终确定的 `true/false`；只有 `true` 时要求补全阶段。
+- `completed_markdown`：只在补全启用时填写，保存补全后的核心译稿；发布前与测验片段组装为 `translated_markdown`。
+- `completion_ledger_file`：只在补全启用时填写，逐空记录答案状态、来源锚点、推理与依据；不得保存整份原文。
+- `reference_material_files`：用户明确提供且本轮可读取的参考资料路径数组；其文件作为补全及审计阶段输入。
 - `translated_markdown`：统一译稿路径，固定为 `output/<学案名>/translated_doc.md`。
 - `output_dir`：本份学案成品目录绝对路径。
 - `shared_runtime`：安装后的 `translation-orchestrator` 共享资源目录绝对路径，由编排 Skill 根据自身所在 Skills 根目录解析；不得假定技能安装在项目内。
 - `discipline`、`source_language`：本轮识别结果；不写入偏好文件。
-- `output_formats`：仅包含本轮选择的格式。
+- `output_formats`：仅包含本轮选择的格式；Pro/Max 可选 `html`、`docx`、`md`、`pptx`，Lite/Plus 不提供 PPTX 输出。
 - `layout`、`show_concept_table`、`annotate_level`、`include_images`、`glossary_mode`：本轮确认值。术语策略缺省为 `wikidata`；旧值 `system_glossary` 读取时按 `wikidata` 处理，用户明确选择 `ai_auto` 时不查询外部服务。
 - `quiz_levels`、`quiz_language`：本轮确认值；无测验时 `quiz_levels` 为空数组、`quiz_language` 为空值。
 - `image_dir`、`placement_file`：仅在用户启用配图且 `vision_capability=available` 时传给 Reader；无图像能力时不要传入，不能导出未经核准的图片。
 - `state_file`：`.translation-state.json` 的绝对路径；仅用于阶段检查点，不含正文。
 - `cache_dir`：`output/<lesson_name>/.translator-cache-max/` 对应的绝对路径。
 - `cache_state_file`：缓存目录内的 `workflow-state.json`，记录可持久缓存阶段的指纹和成品哈希。
-- `cache_core_markdown`、`cache_coverage_index_file`、`cache_quiz_file`：缓存中的已审计正文 Markdown、无正文的锚点覆盖索引和已核验测验片段路径；没有测验时 `cache_quiz_file` 为空。
+- `cache_core_markdown`、`cache_coverage_index_file`、`cache_quiz_file`、`cache_completed_markdown`、`cache_completion_ledger_file`：缓存中的已审计正文 Markdown、无正文的锚点覆盖索引、已核验测验片段、已审计补全译稿和逐空记录路径；没有测验/补全时对应路径为空。
 - `quiz_draft_file`、`quiz_final_file`：本轮测验草稿与最终片段路径；复用测验缓存时 `quiz_final_file` 可直接指向 `cache_quiz_file`。
 - `coverage_index_file`：翻译阶段产生的锚点覆盖清单绝对路径；仅含锚点、译稿位置与状态。
 - `findings_file`：审计阶段写入的紧凑缺陷清单绝对路径。
@@ -81,16 +85,18 @@ PDF/PPTX 的结构清单、原文文本、渲染页和视觉识别中间数据�
 | `explain_pptx` | 最终 manifest、候选页渲染图 | `vision_capability`、能力证据、`vision_model_id`、Explainer 版本 | 仅有图像输入且存在候选页时执行；无候选或无图像输入时跳过并保留原因 |
 | `translate` | 原件及 PDF/PPTX 处理摘要 | 路线、学科、语言、布局、概念表、注释、图片、术语来源、cache_dir、所选翻译 Skill 版本 | 正文译稿与覆盖索引；不含格式和测验 |
 | `quiz` | 原件及 PDF/PPTX 处理摘要 | 难度、语言、源语言、出题/解析版本 | 已核验测验片段 |
-| `audit_translation` | 原件、缓存正文 Markdown、coverage index 和 PDF/PPTX 处理摘要 | 正文翻译设置、cache_dir、审计版本 | 正文语义门禁；测验变化不触发正文重审 |
+| `audit_translation` | 原件、缓存正文 Markdown、coverage index 和 PDF/PPTX 处理摘要 | 正文翻译设置、cache_dir、审计版本 | 正文语义门禁；测验/补全设置变化不触发正文重审 |
 | `audit_quiz` | 原件、缓存测验片段和 PDF/PPTX 处理摘要 | 测验设置、cache_dir、出题/解析版本、审计版本 | 仅测验源文依据与答案解析门禁 |
-| `publish_html` / `publish_docx` | 缓存正文、可选测验、启用时的图片目录与位置表 | 输出目录、对应格式设置、publisher 与 builder 版本 | 各自成品构建及格式检查 |
-| `publish_md` | 缓存正文、可选测验 | 输出目录、Markdown builder 版本 | Markdown 成品及结构检查 |
+| `complete_handout` | 原件/提取文本、已审计基础译稿、用户参考资料 | 补全开关、版式、学科/源语言、补全 Skill 版本 | 生成 `completed_markdown` 和逐空记录；独立于正文翻译缓存 |
+| `publish_html` / `publish_docx` / `publish_pptx` | 组装后的 `translated_markdown`、可选测验、启用时的图片目录与位置表 | 输出目录、对应格式设置、publisher 与 builder 版本 | 各自成品构建及格式检查；补全启用时依赖 `complete_handout` |
+| `publish_md` | 组装后的 `translated_markdown`、可选测验 | 输出目录、Markdown builder 版本 | Markdown 成品及结构检查；补全启用时依赖 `complete_handout` |
+| `audit_completion` | 原件/提取文本、基础译稿、补全译稿/ledger、用户参考资料及外部引用、全部已选格式成品 | 补全设置、补全 Skill 与审计版本 | 所有成品构建后逐空核对依据、证明逻辑和成品内容；正确标记的待老师确认项允许通过 |
 
 在任意阶段并行分派子 Agent 时，仍需按上表依赖推进：共享源文只解析一次；仅并行运行互不依赖的工作包；答案解析晚于题目草稿，质量审计晚于对应产物，格式发布晚于语义审计。不同格式可以在审计通过后分别并行构建。
 
 PDF/PPTX 一律使用完整路线：在正文、测验或语义审计未命中时，分别运行 `parse_pdf`、`review_pdf` 或 `parse_pptx`、`review_pptx`。当前模型支持图像输入且宿主能把页图像素交给模型时，必须逐页视觉核对；模型品牌、文件路径、OCR 或文字描述均不能单独作为能力证据。只有当前模型明确不支持图像输入，或宿主明确没有实际图像输入通道时，才能不写视觉 JSON；Reader 写出 `gate=SKIPPED_NO_VISION` 后继续提取文本翻译与共同质量审计，并在成品中标明未核对页。`gate=PASS` 才代表视觉覆盖通过；`SKIPPED_NO_VISION` 绝不等同于视觉通过。`PARTIAL`/`FAIL`，或能力标记为 `available` 却未完成逐页核对时，停止后续生成。仅在能力可用且存在候选页时调用共享视觉讲解 Skill。`quick` 只允许短小、结构清楚、无视觉内容的 DOCX/TXT 或纯文本；扫描/OCR、图像/图表、复杂表格、页码视觉追踪需求、篇幅过长或无法确认完整性的材料都必须设为 `full`。DOCX/TXT 使用 `text_extractor.py`。PDF 仅对少于 80 个原生文字字符的页面尝试 OCR，最多默认 100 页；OCR 草稿必须对照渲染页逐条确认或纠正后才可进入译稿。
 
-无论路线为 `quick` 还是 `full`，翻译阶段都只产出 `translated_core_markdown` 与 `coverage_index_file`，正文必须进入同一个完整 `audit_translation` 阶段。选择测验时继续经过共同的出题、解析和 `audit_quiz` 阶段；所有语义门禁通过后才进入所选 Publisher。`quick` 路线不得自行构建或交付成品。
+无论路线为 `quick` 还是 `full`，翻译阶段都只产出 `translated_core_markdown` 与 `coverage_index_file`，正文必须进入同一个完整 `audit_translation` 阶段。选择测验时继续经过共同的出题、解析和 `audit_quiz` 阶段。仅当 `smart_handout_completion=true` 时，在正文（及所选测验）审计通过后运行 `complete_handout`；Publisher 使用 `completed_markdown`（启用时）或基础译稿（未启用时）与已选测验组装的发布稿。所有格式构建后运行 `audit_completion`，逐空核对所有已选成品；未解项如保留空格并标注“待老师确认”可通过。所有必需语义门禁通过后才完成交付。`quick` 路线不得自行构建或交付成品。
 
 PDF/PPTX 翻译和审计的持久缓存签名使用原件 SHA-256、相关设置、Skill/运行规则指纹以及对应 processing fingerprint；临时 manifest、`source_text_file` 和 `visual_assets_dir` 不能成为持久缓存的必需文件输入。切换发布格式时可复用已审计 Markdown；改变正文/测验参数后再重读原件。
 
@@ -107,7 +113,7 @@ PDF/PPTX 翻译和审计的持久缓存签名使用原件 SHA-256、相关设置
 
 ## 其他阶段规则
 
-源文直接来自对话时，先写入 `source_text_file` 并以该文件作为输入。发布阶段只在缓存正文、可选测验与配图目录的内容哈希一致时复用。发布 HTML/DOCX/Markdown 时，每次 builder 调用只请求一种格式；只有本次退出码为 0、返回 JSON 路径正确且文件非空，才运行对应格式检查并 `mark`。旧成品不能代替本次成功结果。
+源文直接来自对话时，先写入 `source_text_file` 并以该文件作为输入。发布阶段只在缓存正文、可选测验与配图目录的内容哈希一致时复用。发布 HTML/DOCX/Markdown/PPTX 时，每次 builder 调用只请求一种格式；只有本次退出码为 0、返回 JSON 路径正确且文件非空，才运行对应格式检查并 `mark`。旧成品不能代替本次成功结果。
 
 测验先出题、再验证唯一答案并写解析；题目必须包含源文页码/标题定位，解析只读取对应锚点片段。修复审计缺陷只改受影响锚点及必要邻段，并只重建受影响发布格式。各阶段失败时保留本轮检查点；只有所有已选阶段通过后才写入对应持久缓存。
 

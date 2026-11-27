@@ -53,4 +53,4 @@ license: MIT
 
 ## 输出
 
-写入任务清单指定的 translated_core_markdown 和 coverage_index_file；正文中不插入章末测验。不要重建 HTML/DOCX 或声称已通过最终质量审计。复用任务目录中已提取的 source_text_file、placement.json 与 images/。经正文审计通过后，编排器将正文 Markdown 与无正文 coverage index 一并写入持久 cache，再把正文和可选测验片段组装为 translated_markdown。
+写入任务清单指定的 translated_core_markdown 和 coverage_index_file；正文中不插入章末测验。不要重建 HTML/DOCX/PPTX 或声称已通过最终质量审计。复用任务目录中已提取的 source_text_file、placement.json 与 images/。经正文审计通过后，编排器将正文 Markdown 与无正文 coverage index 一并写入持久 cache，再把正文和可选测验片段组装为 translated_markdown。

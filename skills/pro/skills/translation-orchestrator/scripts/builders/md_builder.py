@@ -3,13 +3,13 @@
 from pathlib import Path
 from html import escape
 
-from .base import annotate_first_occurrences, style_source_markers, validate_rendered_text
+from .base import annotate_first_occurrences, style_source_markers, strip_handout_completion_markers, validate_rendered_text
 
 
 def build_markdown(md_content: str, output_path: Path) -> Path:
     """将 Markdown 内容加上水印注释后写盘（术语首次出现自动补原文括号）。"""
     marker = "<!-- WATERMARK -->"
-    body = style_source_markers(annotate_first_occurrences(md_content), "markdown")
+    body = style_source_markers(annotate_first_occurrences(strip_handout_completion_markers(md_content)), "markdown")
     content = marker + "\n\n" + body + "\n\n" + marker
 
     try:

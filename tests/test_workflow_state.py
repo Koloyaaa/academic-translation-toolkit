@@ -39,6 +39,7 @@ class WorkflowStateDependencyTests(unittest.TestCase):
             "foreign-academic-quiz-generator",
             "foreign-academic-solution-explainer",
             "foreign-academic-quality-auditor",
+            "foreign-academic-handout-completer",
             "foreign-academic-html-publisher",
             "foreign-academic-docx-publisher",
         ):
@@ -93,6 +94,26 @@ class WorkflowStateDependencyTests(unittest.TestCase):
             stream.write("\n# lookup behavior changed")
         after = self.signature("translate", "glossary_mode,discipline,include_images", task)
         self.assertEqual(before, after)
+
+    def test_completion_signature_tracks_setting_layout_and_skill_rules(self):
+        task = {
+            **self.task,
+            "smart_handout_completion": True,
+            "layout": "translation_only",
+            "source_language": "French",
+        }
+        first = self.signature("complete_handout", "", task)
+        first_audit = self.signature("audit_completion", "", task)
+        different_layout = self.signature("complete_handout", "", {**task, "layout": "source_first"})
+        self.assertNotEqual(first, different_layout)
+
+        skill_file = self.root / "skills" / "foreign-academic-handout-completer" / "SKILL.md"
+        with skill_file.open("a", encoding="utf-8") as stream:
+            stream.write("\nproof completion rules changed")
+        after_skill_change = self.signature("complete_handout", "", task)
+        self.assertNotEqual(first, after_skill_change)
+        after_audit_skill_change = self.signature("audit_completion", "", task)
+        self.assertNotEqual(first_audit, after_audit_skill_change)
 
     def test_translation_signature_tracks_extractor_code_and_enabled_images(self):
         keys = "glossary_mode,discipline,include_images"

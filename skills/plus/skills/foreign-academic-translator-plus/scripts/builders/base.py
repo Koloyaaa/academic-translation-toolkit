@@ -5,6 +5,37 @@ from pathlib import Path
 
 WATERMARK = "DornGames @Koloyaaa Léo WEE 出品: foreign-academic-translator-skill"
 
+_HANDOUT_COMPLETION_MARKER_RE = re.compile(
+    r"(?m)^[ \t]*<!--\s*HANDOUT_COMPLETION_SLOT:[A-Za-z0-9_.-]+\s*-->[ \t]*\r?\n?"
+)
+_HANDOUT_COMPLETION_HTML_RE = re.compile(
+    r"(?s)<!--\s*HANDOUT_COMPLETION_SLOT:[A-Za-z0-9_.-]+\s*-->\s*"
+    r"<blockquote(?:\s[^>]*)?>(.*?)</blockquote>"
+)
+
+
+def strip_handout_completion_markers(markdown_text: str) -> str:
+    """Remove internal completion anchors from the user-facing Markdown file."""
+    return _HANDOUT_COMPLETION_MARKER_RE.sub("", markdown_text)
+
+
+def mark_handout_completion_blocks(body_html: str) -> str:
+    """Turn anchored Markdown blockquotes into tagged blocks for format adapters."""
+    return _HANDOUT_COMPLETION_HTML_RE.sub(
+        lambda match: '<blockquote class="smart-completion">' + match.group(1) + "</blockquote>",
+        body_html,
+    )
+
+
+def wrap_handout_completion_details(body_html: str) -> str:
+    """Wrap tagged blocks in a closed-by-default HTML disclosure element."""
+    return re.sub(
+        r'(?s)<blockquote class="smart-completion">(.*?)</blockquote>',
+        '<details class="smart-completion"><summary>智能补全（点击查看）</summary>'
+        '<blockquote class="smart-completion">\\1</blockquote></details>',
+        body_html,
+    )
+
 # 匹配带 data-en 的术语 span（保留原开/闭标签与属性，只在内层内容上补括号）
 _SPAN_RE = re.compile(r'(<span\b[^>]*data-en="([^"]+)"[^>]*>)(.*?)(</span>)', re.DOTALL)
 
